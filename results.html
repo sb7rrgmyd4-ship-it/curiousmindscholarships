@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/png" href="favicon.png">
+  <link rel="apple-touch-icon" href="favicon.png">
+  <title>Application Results — The Curious Minds Foundation</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
+  <script src="https://js.paystack.co/v1/inline.js"></script>
+  <style>
+    :root{--navy:#0D1F3C;--gold:#C9A84C;--ivory:#F8F6F1;--text-dark:#1A1A2E;--muted:#6B7280;--white:#FFFFFF;--danger:#C0392B;--success:#2D7A4F;--gold-tint:#FDF6E3;}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:'Inter',sans-serif;background:var(--ivory);color:var(--text-dark);line-height:1.6;}
+    h1,h2{font-family:'Playfair Display',serif;color:var(--navy);}
+    .header{background:var(--navy);color:var(--white);padding:20px 24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+    .header-left{display:flex;align-items:center;gap:12px;}
+    .header h1{font-size:1.25rem;color:var(--white);}
+    .header a{color:var(--gold);font-size:0.9rem;}
+    .container{max-width:800px;margin:0 auto;padding:40px 24px;}
+    .status-banner{padding:20px 24px;border-radius:12px;margin-bottom:24px;display:flex;align-items:flex-start;gap:16px;}
+    .status-banner.awaiting{background:var(--gold-tint);border:2px solid var(--gold);}
+    .status-banner.flagged{background:#fdecea;border:2px solid var(--danger);}
+    .status-banner.approved{background:#e8f5e9;border:2px solid var(--success);}
+    .status-banner .icon{font-size:2rem;flex-shrink:0;}
+    .status-banner h2{font-size:1.15rem;margin-bottom:6px;}
+    .status-banner p{font-size:0.9rem;color:var(--muted);}
+    .subheader{color:var(--muted);font-size:0.9rem;margin-bottom:32px;padding:16px;background:var(--white);border-radius:8px;}
+    .results-card{background:var(--white);border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,0.06);overflow:hidden;margin-bottom:32px;}
+    .results-table{width:100%;border-collapse:collapse;}
+    .results-table th{background:var(--gold);color:var(--navy);padding:14px 16px;text-align:left;font-size:0.85rem;}
+    .results-table td{padding:14px 16px;border-bottom:1px solid #eee;font-size:0.9rem;}
+    .badge{display:inline-block;padding:4px 12px;border-radius:50px;font-size:0.8rem;font-weight:600;}
+    .badge-pass{background:#e8f5e9;color:var(--success);}
+    .badge-fail{background:#fdecea;color:var(--danger);}
+    .score-bar{height:8px;background:#eee;border-radius:4px;margin-top:8px;overflow:hidden;}
+    .score-bar-fill{height:100%;background:var(--gold);border-radius:4px;}
+    .overall-card{background:var(--white);border-radius:12px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,0.06);margin-bottom:24px;}
+    .overall-header{padding:24px;font-weight:700;font-size:1.1rem;}
+    .overall-header.success{background:#e8f5e9;color:var(--success);}
+    .overall-header.fail{background:#fdecea;color:var(--danger);}
+    .overall-header.flagged{background:var(--danger);color:var(--white);}
+    .overall-header.awaiting{background:var(--gold-tint);color:var(--navy);}
+    .overall-header.payment{background:linear-gradient(135deg,var(--navy),#152a4a);color:var(--white);}
+    .overall-body{padding:24px;}
+    .overall-body p{margin-bottom:12px;color:var(--muted);}
+    .btn{display:inline-block;padding:12px 28px;background:var(--gold);color:var(--navy);border:none;border-radius:50px;font-weight:600;cursor:pointer;text-decoration:none;margin:8px 8px 0 0;min-height:44px;font-size:0.95rem;}
+    .btn:hover{background:#b8963f;}
+    .btn-outline{background:transparent;border:2px solid var(--navy);color:var(--navy);}
+    .btn-outline:hover{background:var(--navy);color:var(--white);}
+    .btn-pay{background:var(--navy);color:var(--gold);font-size:1.05rem;padding:16px 36px;}
+    .btn-pay:hover{background:#152a4a;}
+    .payment-box{background:var(--ivory);border-radius:12px;padding:24px;margin-top:16px;text-align:center;border:2px dashed var(--gold);}
+    .payment-amount{font-family:'Playfair Display',serif;font-size:2rem;color:var(--navy);margin:12px 0;}
+    .payment-note{font-size:0.85rem;color:var(--muted);}
+    .flag-table{width:100%;border-collapse:collapse;margin-top:16px;}
+    .flag-table th,.flag-table td{padding:10px 12px;border:1px solid #eee;text-align:left;font-size:0.85rem;}
+    .flag-table th{background:var(--ivory);}
+    .modal-overlay{position:fixed;inset:0;background:rgba(13,31,60,0.7);display:none;align-items:center;justify-content:center;z-index:1000;padding:24px;}
+    .modal-overlay.open{display:flex;}
+    .thank-modal{background:var(--white);border-radius:16px;padding:40px;max-width:480px;text-align:center;position:relative;}
+    .thank-modal .check-circle{width:72px;height:72px;background:#e8f5e9;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-size:2rem;}
+    .thank-modal h2{font-family:'Playfair Display',serif;margin-bottom:12px;}
+    .thank-modal p{color:var(--muted);margin-bottom:8px;line-height:1.7;}
+    .thank-modal .email-highlight{color:var(--navy);font-weight:600;}
+    @media(max-width:600px){.results-table{font-size:0.8rem;}.results-table th,.results-table td{padding:10px 8px;}}
+  </style>
+</head>
+<body>
+  <header class="header">
+    <div class="header-left">
+      <svg width="28" height="28" viewBox="0 0 32 32" fill="none"><path d="M16 2C16 2 10 8 10 16C10 20 12 24 16 26C20 24 22 20 22 16C22 8 16 2 16 2Z" stroke="#C9A84C" stroke-width="2"/></svg>
+      <h1>My Application Portal</h1>
+    </div>
+    <a href="auth.html" id="logoutLink">Logout</a>
+  </header>
+
+  <div class="container">
+    <div id="topBanner"></div>
+    <div class="subheader" id="subheader"></div>
+
+    <div class="results-card" id="resultsCard">
+      <table class="results-table">
+        <thead><tr><th>Test</th><th>Score</th><th>Percentage</th><th>Status</th></tr></thead>
+        <tbody id="resultsBody"></tbody>
+      </table>
+    </div>
+
+    <div class="overall-card" id="overallCard">
+      <div class="overall-header" id="overallHeader"></div>
+      <div class="overall-body" id="overallBody"></div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="thankModal">
+    <div class="thank-modal">
+      <div class="check-circle">✓</div>
+      <h2>Thank You for Completing Your Tests</h2>
+      <p>Your application has been successfully submitted. Our admissions panel will review your results and supporting documents.</p>
+      <p>You will receive your final decision at <span class="email-highlight" id="modalEmail"></span> within <strong>6–8 weeks</strong> of the application deadline.</p>
+      <p style="font-size:0.85rem;margin-top:16px;">Please check this portal regularly for updates on your application status.</p>
+      <button class="btn" id="closeThankModal" style="margin-top:20px;">Got It</button>
+    </div>
+  </div>
+
+  <script>
+    function requireLogin() {
+      if (!localStorage.getItem('cmf_isLoggedIn')) window.location.href = 'auth.html';
+    }
+
+    function syncApplicantFromStore(email) {
+      const applicants = JSON.parse(localStorage.getItem('cmf_applicants') || '[]');
+      const app = applicants.find(a => a.email === email);
+      if (!app) return null;
+      if (app.isFlagged) {
+        localStorage.removeItem('cmf_isFlagged');
+        localStorage.removeItem('cmf_flagReason');
+      }
+      if (app.adminApproved) localStorage.setItem('cmf_adminApproved', 'true');
+      if (app.acceptanceFeePaid) localStorage.setItem('cmf_acceptanceFeePaid', 'true');
+      if (app.university) localStorage.setItem('cmf_university', app.university);
+      return app;
+    }
+
+    function getApplicant(email) {
+      const applicants = JSON.parse(localStorage.getItem('cmf_applicants') || '[]');
+      return applicants.find(a => a.email === email);
+    }
+
+    function updateApplicant(email, updates) {
+      const applicants = JSON.parse(localStorage.getItem('cmf_applicants') || '[]');
+      const idx = applicants.findIndex(a => a.email === email);
+      if (idx >= 0) {
+        applicants[idx] = { ...applicants[idx], ...updates };
+        localStorage.setItem('cmf_applicants', JSON.stringify(applicants));
+      }
+    }
+
+    function resetTests() {
+      ['cmf_test1Score','cmf_test2Score','cmf_test3Score','cmf_test1Total','cmf_test2Total','cmf_test3Total','cmf_test1Pass','cmf_test2Pass','cmf_test3Pass'].forEach(k => localStorage.removeItem(k));
+      const email = localStorage.getItem('cmf_email');
+      updateApplicant(email, { test1Score:null, test2Score:null, test3Score:null, test1Pass:null, test2Pass:null, test3Pass:null, overallStatus:'incomplete', adminApproved:false, acceptanceFeePaid:false });
+      localStorage.removeItem('cmf_adminApproved');
+      localStorage.removeItem('cmf_acceptanceFeePaid');
+      window.location.href = 'test-instructions.html';
+    }
+
+    function payAcceptanceFee() {
+      const publicKey = localStorage.getItem('cmf_paystack_public_key');
+      if (!publicKey) {
+        alert('Payment system is not configured yet. Please contact the Foundation administrator.');
+        return;
+      }
+      const email = localStorage.getItem('cmf_email');
+      const name = localStorage.getItem('cmf_name');
+      const handler = PaystackPop.setup({
+        key: publicKey,
+        email: email,
+        amount: 2000000,
+        currency: 'NGN',
+        ref: 'CMF-' + Date.now() + '-' + Math.floor(Math.random() * 10000),
+        metadata: { custom_fields: [{ display_name: 'Applicant Name', variable_name: 'applicant_name', value: name }] },
+        callback: function(response) {
+          localStorage.setItem('cmf_acceptanceFeePaid', 'true');
+          localStorage.setItem('cmf_paymentRef', response.reference);
+          localStorage.setItem('cmf_paymentDate', new Date().toISOString());
+          updateApplicant(email, { acceptanceFeePaid: true, paymentRef: response.reference, paymentDate: new Date().toISOString() });
+          location.reload();
+        },
+        onClose: function() {}
+      });
+      handler.openIframe();
+    }
+
+    requireLogin();
+    const email = localStorage.getItem('cmf_email') || '';
+    const name = localStorage.getItem('cmf_name') || 'Applicant';
+    const course = localStorage.getItem('cmf_course') || '—';
+    const level = localStorage.getItem('cmf_level') || '—';
+    const university = localStorage.getItem('cmf_university') || getApplicant(email)?.university || '—';
+
+    syncApplicantFromStore(email);
+    const applicant = getApplicant(email);
+
+    document.getElementById('subheader').innerHTML =
+      `<strong>Name:</strong> ${name} &nbsp;|&nbsp; <strong>Email:</strong> ${email} &nbsp;|&nbsp; <strong>Course:</strong> ${course} &nbsp;|&nbsp; <strong>Level:</strong> ${level}`;
+
+    document.getElementById('logoutLink').addEventListener('click', e => {
+      e.preventDefault();
+      localStorage.removeItem('cmf_isLoggedIn');
+      window.location.href = 'auth.html';
+    });
+
+    if (localStorage.getItem('cmf_showThankYou') === 'true') {
+      document.getElementById('thankModal').classList.add('open');
+      document.getElementById('modalEmail').textContent = email;
+      localStorage.removeItem('cmf_showThankYou');
+    }
+    document.getElementById('closeThankModal').addEventListener('click', () => {
+      document.getElementById('thankModal').classList.remove('open');
+    });
+
+    const tests = [
+      { name: 'Test 1: Discipline Exam', total: 30, scoreKey: 'cmf_test1Score' },
+      { name: 'Test 2: Aptitude & Reasoning', total: 25, scoreKey: 'cmf_test2Score' },
+      { name: 'Test 3: Situational Judgement', total: 20, scoreKey: 'cmf_test3Score' }
+    ];
+
+    let allPassed = true, anyFailed = false, hasTest3 = !!localStorage.getItem('cmf_test3Score');
+    const tbody = document.getElementById('resultsBody');
+
+    tests.forEach(t => {
+      const scoreRaw = localStorage.getItem(t.scoreKey);
+      const score = scoreRaw !== null ? parseInt(scoreRaw) : null;
+      const hasScore = score !== null && !isNaN(score);
+      const pct = hasScore && t.total ? Math.round((score / t.total) * 100) : 0;
+      const passed = hasScore && pct >= 60;
+      if (hasScore && !passed) { allPassed = false; anyFailed = true; }
+      if (!hasScore) allPassed = false;
+      const row = document.createElement('tr');
+      row.innerHTML = hasScore ? `
+        <td>${t.name}</td>
+        <td>${score} / ${t.total}</td>
+        <td>${pct}%<div class="score-bar"><div class="score-bar-fill" style="width:${pct}%"></div></div></td>
+        <td><span class="badge ${passed ? 'badge-pass' : 'badge-fail'}">${passed ? '✅ PASS' : '❌ FAIL'}</span></td>
+      ` : `<td>${t.name}</td><td colspan="3" style="color:var(--muted);">Not yet taken</td>`;
+      tbody.appendChild(row);
+    });
+
+    const adminApproved = localStorage.getItem('cmf_adminApproved') === 'true' || applicant?.adminApproved;
+    const feePaid = localStorage.getItem('cmf_acceptanceFeePaid') === 'true' || applicant?.acceptanceFeePaid;
+    const header = document.getElementById('overallHeader');
+    const body = document.getElementById('overallBody');
+    const topBanner = document.getElementById('topBanner');
+
+    if (feePaid) {
+      topBanner.innerHTML = `<div class="status-banner approved"><span class="icon">🎓</span><div><h2>Welcome, Scholar!</h2><p>Your acceptance fee has been confirmed. You are officially enrolled for the 2025/2026 scholarship cycle.</p></div></div>`;
+      header.className = 'overall-header success';
+      header.textContent = '✅ Acceptance Fee Confirmed';
+      body.innerHTML = `
+        <p>Payment reference: <strong>${localStorage.getItem('cmf_paymentRef') || applicant?.paymentRef || '—'}</strong></p>
+        <p>Congratulations! Your place as a Curious Minds Foundation scholar is now secured. You will receive onboarding details at <strong>${email}</strong> within 5 business days.</p>
+        <a href="index.html" class="btn">Return to Home</a>
+      `;
+    } else if (adminApproved) {
+      topBanner.innerHTML = `<div class="status-banner approved"><span class="icon">🎉</span><div><h2>Congratulations — You Have Been Selected!</h2><p>The admissions panel has approved your scholarship application. Complete your acceptance to secure your place.</p></div></div>`;
+      header.className = 'overall-header payment';
+      header.textContent = 'Proceed to Accept Your Scholarship';
+      body.innerHTML = `
+        <p>We are delighted to inform you that you have passed all requirements and been selected as a scholar for the 2025/2026 cycle.</p>
+        <p>To confirm your acceptance, please pay the one-time <strong>Acceptance Fee of ₦20,000</strong> below. This fee covers administrative processing and scholar onboarding materials.</p>
+        <div class="payment-box">
+          <p class="payment-note">Acceptance Fee (One-Time)</p>
+          <div class="payment-amount">₦20,000</div>
+          <p class="payment-note">Secure payment powered by Paystack</p>
+          <button class="btn btn-pay" id="payBtn">Pay Acceptance Fee</button>
+        </div>
+        <a href="index.html" class="btn btn-outline" style="margin-top:16px;">Return to Home</a>
+      `;
+      document.getElementById('payBtn').addEventListener('click', payAcceptanceFee);
+    } else if (allPassed && hasTest3) {
+      topBanner.innerHTML = `<div class="status-banner awaiting"><span class="icon">⏳</span><div><h2>Awaiting Final Decision</h2><p>Your tests are complete. Our panel is reviewing your application.</p></div></div>`;
+      header.className = 'overall-header awaiting';
+      header.textContent = 'Application Under Review';
+      body.innerHTML = `
+        <p>Thank you for completing all three scholarship tests. You have successfully met the minimum requirements at the test stage.</p>
+        <p>Your application is now under review by our admissions panel. Your final decision will be sent to <strong>${email}</strong> within <strong>6–8 weeks</strong> of the application deadline.</p>
+        <p style="font-size:0.85rem;">Please ensure all supporting documents have been uploaded. You will be notified here when a decision is made.</p>
+        <button class="btn btn-outline" onclick="resetTests()">Retake Tests</button>
+        <a href="index.html" class="btn">Return to Home</a>
+      `;
+    } else if (anyFailed && hasTest3) {
+      header.className = 'overall-header fail';
+      header.textContent = 'Tests Not Passed';
+      body.innerHTML = `
+        <p>You did not meet the minimum pass mark of 60% in one or more required tests. Your application cannot proceed to the review stage in this cycle.</p>
+        <p>You may <strong>retake all three tests</strong> to improve your scores. We encourage you to prepare thoroughly before attempting again.</p>
+        <button class="btn" onclick="resetTests()">Retake All Tests</button>
+        <a href="index.html" class="btn btn-outline">Return to Home</a>
+      `;
+    } else {
+      header.className = 'overall-header awaiting';
+      header.textContent = 'Tests Incomplete';
+      body.innerHTML = `
+        <p>You have not yet completed all three required tests. Continue your application to proceed.</p>
+        <a href="test-instructions.html" class="btn">Continue Tests</a>
+        <button class="btn btn-outline" onclick="resetTests()">Start Fresh</button>
+      `;
+    }
+  </script>
+</body>
+</html>

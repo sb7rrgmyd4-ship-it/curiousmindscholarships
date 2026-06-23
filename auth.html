@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/png" href="favicon.png">
+  <link rel="apple-touch-icon" href="favicon.png">
+  <title>Login / Register — The Curious Minds Foundation</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
+  <style>
+    :root { --navy:#0D1F3C; --gold:#C9A84C; --ivory:#F8F6F1; --text-dark:#1A1A2E; --muted:#6B7280; --white:#FFFFFF; --danger:#C0392B; }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:'Inter',sans-serif;background:var(--ivory);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;color:var(--text-dark);}
+    .auth-card{background:var(--white);border-radius:16px;box-shadow:0 10px 40px rgba(13,31,60,0.12);max-width:480px;width:100%;padding:40px;}
+    .auth-header{text-align:center;margin-bottom:32px;}
+    .auth-header svg{margin-bottom:12px;}
+    .auth-header h1{font-family:'Playfair Display',serif;font-size:1.25rem;color:var(--navy);}
+    .tabs{display:flex;border-bottom:2px solid #eee;margin-bottom:28px;}
+    .tab{flex:1;padding:12px;background:none;border:none;font-family:'Inter',sans-serif;font-size:0.95rem;font-weight:500;color:var(--muted);cursor:pointer;position:relative;}
+    .tab.active{color:var(--navy);}
+    .tab.active::after{content:'';position:absolute;bottom:-2px;left:0;right:0;height:2px;background:var(--gold);}
+    .form-panel{display:none;}
+    .form-panel.active{display:block;}
+    .form-group{margin-bottom:18px;}
+    .form-group label{display:block;margin-bottom:6px;font-size:0.9rem;font-weight:500;}
+    .form-group input{width:100%;padding:12px 16px;border:1px solid #ddd;border-radius:8px;font-size:0.95rem;font-family:'Inter',sans-serif;}
+    .form-group input:focus{outline:none;border-color:var(--gold);}
+    .error{color:var(--danger);font-size:0.8rem;margin-top:4px;display:none;}
+    .error.show{display:block;}
+    .btn{display:block;width:100%;padding:14px;background:var(--gold);color:var(--navy);border:none;border-radius:50px;font-weight:600;font-size:0.95rem;cursor:pointer;margin-top:8px;transition:all 0.3s;min-height:44px;}
+    .btn:hover{background:#b8963f;}
+    .forgot{text-align:center;margin-top:16px;}
+    .forgot a{color:var(--gold);font-size:0.9rem;cursor:pointer;}
+    .form-error{background:#fdecea;color:var(--danger);padding:12px;border-radius:8px;font-size:0.9rem;margin-bottom:16px;display:none;}
+    .form-error.show{display:block;}
+    .footer-note{text-align:center;margin-top:24px;font-size:0.8rem;color:var(--muted);}
+    .footer-note a{color:var(--gold);}
+    .back-home{display:block;text-align:center;margin-bottom:20px;color:var(--muted);font-size:0.85rem;}
+    .back-home:hover{color:var(--gold);}
+  </style>
+</head>
+<body>
+  <div class="auth-card">
+    <a href="index.html" class="back-home">← Back to Home</a>
+    <div class="auth-header">
+      <svg width="40" height="40" viewBox="0 0 32 32" fill="none"><path d="M16 2C16 2 10 8 10 16C10 20 12 24 16 26C20 24 22 20 22 16C22 8 16 2 16 2Z" stroke="#C9A84C" stroke-width="2"/><ellipse cx="16" cy="14" rx="3" ry="5" fill="#C9A84C" opacity="0.6"/></svg>
+      <h1>The Curious Minds Foundation</h1>
+    </div>
+    <div class="tabs">
+      <button class="tab active" data-tab="register">Create Account</button>
+      <button class="tab" data-tab="login">Login</button>
+    </div>
+    <div class="form-error" id="formError"></div>
+
+    <form class="form-panel active" id="registerForm">
+      <div class="form-group"><label>Full Name</label><input type="text" id="regName" required><div class="error" id="errRegName"></div></div>
+      <div class="form-group"><label>Email Address</label><input type="email" id="regEmail" required><div class="error" id="errRegEmail"></div></div>
+      <div class="form-group"><label>Phone Number</label><input type="tel" id="regPhone" required><div class="error" id="errRegPhone"></div></div>
+      <div class="form-group"><label>Password</label><input type="password" id="regPassword" minlength="8" required><div class="error" id="errRegPassword"></div></div>
+      <div class="form-group"><label>Confirm Password</label><input type="password" id="regConfirm" required><div class="error" id="errRegConfirm"></div></div>
+      <button type="submit" class="btn">Create Account</button>
+    </form>
+
+    <form class="form-panel" id="loginForm">
+      <div class="form-group"><label>Email Address</label><input type="email" id="loginEmail" required><div class="error" id="errLoginEmail"></div></div>
+      <div class="form-group"><label>Password</label><input type="password" id="loginPassword" required><div class="error" id="errLoginPassword"></div></div>
+      <button type="submit" class="btn">Login</button>
+      <div class="forgot"><a id="forgotLink">Forgot Password?</a></div>
+    </form>
+
+    <p class="footer-note">By continuing, you agree to our <a href="#">Terms of Use</a> and <a href="#">Privacy Policy</a>.</p>
+  </div>
+
+  <script>
+    document.querySelectorAll('.tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.form-panel').forEach(p => p.classList.remove('active'));
+        tab.classList.add('active');
+        document.getElementById(tab.dataset.tab === 'register' ? 'registerForm' : 'loginForm').classList.add('active');
+        document.getElementById('formError').classList.remove('show');
+      });
+    });
+
+    function showError(id, msg) { const el = document.getElementById(id); el.textContent = msg; el.classList.add('show'); }
+    function clearErrors(prefix) { document.querySelectorAll('.error').forEach(e => { e.classList.remove('show'); e.textContent = ''; }); }
+
+    document.getElementById('registerForm').addEventListener('submit', e => {
+      e.preventDefault();
+      clearErrors();
+      let valid = true;
+      const name = document.getElementById('regName').value.trim();
+      const email = document.getElementById('regEmail').value.trim();
+      const phone = document.getElementById('regPhone').value.trim();
+      const password = document.getElementById('regPassword').value;
+      const confirm = document.getElementById('regConfirm').value;
+      if (!name) { showError('errRegName', 'Full name is required.'); valid = false; }
+      if (!email || !email.includes('@')) { showError('errRegEmail', 'Valid email is required.'); valid = false; }
+      if (!phone) { showError('errRegPhone', 'Phone number is required.'); valid = false; }
+      if (password.length < 8) { showError('errRegPassword', 'Password must be at least 8 characters.'); valid = false; }
+      if (password !== confirm) { showError('errRegConfirm', 'Passwords do not match.'); valid = false; }
+      if (!valid) return;
+
+      const users = JSON.parse(localStorage.getItem('cmf_users') || '[]');
+      if (users.find(u => u.email === email)) { showError('errRegEmail', 'An account with this email already exists.'); return; }
+
+      users.push({ name, email, phone, password });
+      localStorage.setItem('cmf_users', JSON.stringify(users));
+      localStorage.setItem('cmf_name', name);
+      localStorage.setItem('cmf_email', email);
+      localStorage.setItem('cmf_phone', phone);
+      localStorage.setItem('cmf_isLoggedIn', 'true');
+      localStorage.setItem('cmf_applicationStarted', 'false');
+      window.location.href = 'application-form.html';
+    });
+
+    function syncApplicantOnLogin(email) {
+      const applicants = JSON.parse(localStorage.getItem('cmf_applicants') || '[]');
+      const app = applicants.find(a => a.email === email);
+      if (!app) return null;
+      localStorage.removeItem('cmf_isFlagged');
+      localStorage.removeItem('cmf_flagReason');
+      localStorage.removeItem('cmf_flagTime');
+      if (app.adminApproved) localStorage.setItem('cmf_adminApproved', 'true');
+      if (app.acceptanceFeePaid) localStorage.setItem('cmf_acceptanceFeePaid', 'true');
+      if (app.course) localStorage.setItem('cmf_course', app.course);
+      if (app.level) localStorage.setItem('cmf_level', app.level);
+      if (app.university) localStorage.setItem('cmf_university', app.university);
+      if (app.test1Score != null) localStorage.setItem('cmf_test1Score', app.test1Score);
+      if (app.test2Score != null) localStorage.setItem('cmf_test2Score', app.test2Score);
+      if (app.test3Score != null) localStorage.setItem('cmf_test3Score', app.test3Score);
+      if (app.test1Pass != null) localStorage.setItem('cmf_test1Pass', app.test1Pass);
+      if (app.test2Pass != null) localStorage.setItem('cmf_test2Pass', app.test2Pass);
+      if (app.test3Pass != null) localStorage.setItem('cmf_test3Pass', app.test3Pass);
+      return app;
+    }
+
+    function redirectAfterLogin(email) {
+      syncApplicantOnLogin(email);
+      const app = JSON.parse(localStorage.getItem('cmf_applicants') || '[]').find(a => a.email === email);
+      if (localStorage.getItem('cmf_test3Score') !== null || app?.adminApproved || app?.overallStatus === 'passed' || app?.overallStatus === 'failed' || app?.overallStatus === 'awaiting_review') {
+        window.location.href = 'results.html';
+        return;
+      }
+      if (localStorage.getItem('cmf_applicationStarted') === 'true' || app?.application) {
+        window.location.href = 'application-form.html';
+        return;
+      }
+      window.location.href = 'application-form.html';
+    }
+
+    document.getElementById('loginForm').addEventListener('submit', e => {
+      e.preventDefault();
+      clearErrors();
+      const email = document.getElementById('loginEmail').value.trim();
+      const password = document.getElementById('loginPassword').value;
+      const users = JSON.parse(localStorage.getItem('cmf_users') || '[]');
+      const user = users.find(u => u.email === email && u.password === password);
+      if (!user) {
+        document.getElementById('formError').textContent = 'No account found with that email.';
+        document.getElementById('formError').classList.add('show');
+        return;
+      }
+      localStorage.setItem('cmf_name', user.name);
+      localStorage.setItem('cmf_email', user.email);
+      localStorage.setItem('cmf_phone', user.phone);
+      localStorage.setItem('cmf_isLoggedIn', 'true');
+      redirectAfterLogin(email);
+    });
+
+    document.getElementById('forgotLink').addEventListener('click', () => {
+      alert('A password reset link has been sent to your email.');
+    });
+  </script>
+</body>
+</html>

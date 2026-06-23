@@ -1,0 +1,935 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ 
+  <title>The Curious Minds Foundation — Scholarships for African Leaders</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --navy: #0D1F3C;
+      --gold: #C9A84C;
+      --ivory: #F8F6F1;
+      --text-dark: #1A1A2E;
+      --muted: #6B7280;
+      --white: #FFFFFF;
+      --gold-tint: #FDF6E3;
+      --success: #2D7A4F;
+      --danger: #C0392B;
+      --footer-bg: #0A1628;
+      --footer-border: #1e3a5f;
+      --footer-link: #9CA3AF;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Inter', sans-serif; color: var(--text-dark); background: var(--ivory); line-height: 1.6; }
+    h1, h2, h3, h4 { font-family: 'Playfair Display', serif; font-weight: 700; line-height: 1.2; }
+    a { text-decoration: none; color: inherit; }
+    img { max-width: 100%; }
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+    .section { padding: clamp(60px, 8vw, 100px) 0; }
+    .eyebrow { font-family: 'Inter', sans-serif; font-size: 0.75rem; font-weight: 500; letter-spacing: 0.15em; text-transform: uppercase; color: var(--gold); }
+    .section-title { font-size: clamp(1.75rem, 4vw, 2.5rem); margin-bottom: 16px; color: var(--navy); }
+    .section-intro { color: var(--muted); max-width: 700px; margin-bottom: 48px; font-size: clamp(0.95rem, 2vw, 1.1rem); }
+    .btn { display: inline-flex; align-items: center; justify-content: center; padding: 14px 32px; border-radius: 50px; font-family: 'Inter', sans-serif; font-weight: 500; font-size: 0.95rem; cursor: pointer; border: 2px solid transparent; transition: all 0.3s ease; min-height: 44px; }
+    .btn-gold { background: var(--gold); color: var(--navy); border-color: var(--gold); }
+    .btn-gold:hover { background: #b8963f; border-color: #b8963f; transform: translateY(-2px); }
+    .btn-outline-white { background: transparent; color: var(--white); border-color: var(--white); }
+    .btn-outline-white:hover { background: rgba(255,255,255,0.1); }
+    .btn-outline-navy { background: transparent; color: var(--navy); border-color: var(--navy); }
+    .btn-outline-navy:hover { background: var(--navy); color: var(--white); }
+    .btn-navy { background: var(--navy); color: var(--white); border-color: var(--navy); }
+    .btn-navy:hover { background: #152a4a; }
+    .gold-divider { width: 60px; height: 3px; background: var(--gold); margin: 16px 0 24px; }
+
+    /* NAV */
+    .navbar { position: fixed; top: 0; left: 0; right: 0; z-index: 1000; padding: 16px 0; transition: all 0.3s ease; }
+    .navbar.scrolled { background: var(--white); box-shadow: 0 2px 20px rgba(13,31,60,0.1); padding: 12px 0; }
+    .navbar.scrolled .nav-link { color: var(--text-dark); }
+    .navbar.scrolled .logo-text { color: var(--navy); }
+    .navbar.scrolled .hamburger span { background: var(--navy); }
+    .nav-login { border-color: rgba(255,255,255,0.5); color: #fff; }
+    .navbar.scrolled .nav-login { border-color: var(--navy); color: var(--navy); }
+    .nav-inner { display: flex; align-items: center; justify-content: space-between; max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+    .logo { display: flex; align-items: center; gap: 10px; }
+    .logo-text { font-family: 'Playfair Display', serif; font-weight: 700; font-size: clamp(0.85rem, 2vw, 1.1rem); color: var(--white); transition: color 0.3s; }
+    .nav-links { display: flex; align-items: center; gap: 28px; list-style: none; }
+    .nav-link { font-size: 0.9rem; font-weight: 500; color: rgba(255,255,255,0.9); transition: color 0.3s; position: relative; }
+    .nav-link:hover, .nav-link.active { color: var(--gold); }
+    .nav-link.active::after { content: ''; position: absolute; bottom: -4px; left: 0; right: 0; height: 2px; background: var(--gold); }
+    .nav-actions { display: flex; align-items: center; gap: 12px; }
+    .hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; background: none; border: none; padding: 8px; }
+    .hamburger span { display: block; width: 24px; height: 2px; background: var(--white); transition: all 0.3s; }
+    .hamburger.active span:nth-child(1) { transform: rotate(45deg) translate(5px, 5px); }
+    .hamburger.active span:nth-child(2) { opacity: 0; }
+    .hamburger.active span:nth-child(3) { transform: rotate(-45deg) translate(5px, -5px); }
+    .mobile-menu { display: none; position: fixed; top: 70px; left: 0; right: 0; background: var(--white); box-shadow: 0 10px 30px rgba(0,0,0,0.1); padding: 24px; z-index: 999; }
+    .mobile-menu.open { display: block; }
+    .mobile-menu a { display: block; padding: 12px 0; color: var(--text-dark); font-weight: 500; border-bottom: 1px solid #eee; }
+    .mobile-menu .btn { margin-top: 16px; width: 100%; }
+
+    /* HERO */
+    .hero { background: var(--navy); color: var(--white); padding: clamp(120px, 15vw, 180px) 0 clamp(60px, 8vw, 80px); position: relative; overflow: hidden; }
+    .hero-quote { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-family: 'Playfair Display', serif; font-size: 400px; color: var(--gold); opacity: 0.06; line-height: 1; pointer-events: none; user-select: none; }
+    .hero-content { position: relative; z-index: 1; text-align: center; max-width: 900px; margin: 0 auto; padding: 0 24px; }
+    .hero-eyebrow { margin-bottom: 20px; }
+    .hero h1 { font-size: clamp(2rem, 5vw, 3.5rem); font-weight: 900; margin-bottom: 24px; }
+    .hero-sub { font-size: clamp(1rem, 2vw, 1.15rem); color: rgba(255,255,255,0.75); max-width: 700px; margin: 0 auto 36px; }
+    .hero-ctas { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; margin-bottom: 60px; }
+    .hero-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; background: rgba(0,0,0,0.2); border-radius: 12px; padding: 32px; max-width: 900px; margin: 0 auto; }
+    .stat-item { text-align: center; }
+    .stat-number { font-family: 'Playfair Display', serif; font-size: clamp(1.5rem, 3vw, 2rem); font-weight: 700; color: var(--gold); }
+    .stat-label { font-size: 0.85rem; color: rgba(255,255,255,0.7); margin-top: 4px; }
+
+    /* MARQUEE */
+    .marquee-section { background: var(--ivory); padding: 40px 0; overflow: hidden; }
+    .marquee-label { text-align: center; margin-bottom: 24px; }
+    .marquee-track { display: flex; gap: 16px; animation: marquee 40s linear infinite; width: max-content; }
+    .marquee-badge { background: var(--navy); color: var(--white); padding: 10px 24px; border-radius: 50px; font-size: 0.85rem; font-weight: 500; white-space: nowrap; }
+    @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+    .marquee-wrapper { display: flex; overflow: hidden; }
+
+    /* ABOUT */
+    .about-grid { display: grid; grid-template-columns: 40% 60%; gap: 48px; align-items: center; margin-bottom: 60px; }
+    .about-image { background: var(--navy); border-radius: 12px; min-height: 400px; display: flex; align-items: center; justify-content: center; padding: 40px; position: relative; overflow: hidden; }
+    .about-image::before { content: ''; position: absolute; inset: 0; background: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(201,168,76,0.05) 10px, rgba(201,168,76,0.05) 20px); }
+    .about-quote { font-family: 'Playfair Display', serif; font-style: italic; font-size: clamp(1.2rem, 2.5vw, 1.6rem); color: var(--gold); text-align: center; position: relative; z-index: 1; line-height: 1.5; }
+    .values-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+    .value-card { background: var(--white); padding: 32px; border-radius: 12px; text-align: center; transition: all 0.3s; border-left: 4px solid transparent; }
+    .value-card:hover { transform: translateY(-4px); box-shadow: 0 10px 30px rgba(13,31,60,0.1); border-left-color: var(--gold); }
+    .value-icon { width: 48px; height: 48px; margin: 0 auto 16px; color: var(--gold); }
+    .value-card h3 { font-size: 1.25rem; margin-bottom: 8px; color: var(--navy); }
+    .value-card p { color: var(--muted); font-size: 0.9rem; }
+
+    /* SCHOLARSHIPS */
+    .scholarships-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 32px; margin-bottom: 60px; }
+    .scholarship-card { background: var(--white); border-radius: 12px; padding: 32px; position: relative; border-top: 4px solid var(--gold); transition: all 0.3s; border-left: 4px solid transparent; }
+    .scholarship-card:hover { transform: translateY(-8px); box-shadow: 0 15px 40px rgba(13,31,60,0.12); border-left-color: var(--gold); }
+    .card-badge { position: absolute; top: 20px; right: 20px; padding: 6px 14px; border-radius: 50px; font-size: 0.7rem; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; }
+    .badge-gold { background: var(--gold); color: var(--navy); }
+    .badge-navy { background: var(--navy); color: var(--gold); }
+    .scholarship-card h3 { font-size: 1.35rem; color: var(--navy); margin-bottom: 8px; padding-right: 120px; }
+    .card-tagline { font-style: italic; color: var(--gold); font-size: 0.9rem; margin-bottom: 12px; }
+    .card-target { color: var(--muted); font-size: 0.9rem; margin-bottom: 20px; }
+    .card-details { max-height: 0; overflow: hidden; transition: max-height 0.5s ease; }
+    .card-details.open { max-height: 2000px; }
+    .card-details ul { list-style: none; margin: 16px 0; }
+    .card-details li { padding: 8px 0; font-size: 0.9rem; color: var(--text-dark); border-bottom: 1px solid #f0f0f0; }
+    .card-details li::before { content: '✦ '; color: var(--gold); }
+    .card-meta { margin-top: 16px; padding-top: 16px; border-top: 1px solid #eee; font-size: 0.85rem; }
+    .card-meta strong { color: var(--navy); }
+    .view-details-btn { background: none; border: 2px solid var(--navy); color: var(--navy); padding: 10px 24px; border-radius: 50px; cursor: pointer; font-weight: 500; margin-top: 16px; transition: all 0.3s; }
+    .view-details-btn:hover { background: var(--navy); color: var(--white); }
+
+    /* COMPARISON MATRIX */
+    .compare-section { margin-top: 56px; }
+    .compare-header { text-align: center; margin-bottom: 32px; }
+    .compare-header p { color: var(--muted); max-width: 560px; margin: 12px auto 0; font-size: 0.95rem; }
+    .compare-tabs { display: none; gap: 8px; flex-wrap: wrap; justify-content: center; margin-bottom: 20px; }
+    .compare-tab { padding: 10px 18px; border-radius: 50px; border: 2px solid #e5e2db; background: var(--white); font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: all 0.25s; color: var(--navy); }
+    .compare-tab.active { background: var(--navy); color: var(--white); border-color: var(--navy); }
+    .compare-matrix { background: var(--white); border-radius: 16px; box-shadow: 0 8px 40px rgba(13,31,60,0.08); overflow: hidden; border: 1px solid rgba(201,168,76,0.25); }
+    .compare-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    .compare-table { width: 100%; min-width: 880px; border-collapse: separate; border-spacing: 0; font-size: 0.88rem; }
+    .compare-table thead th { position: sticky; top: 0; z-index: 3; background: var(--navy); color: var(--white); padding: 20px 16px; text-align: center; font-family: 'Playfair Display', serif; font-weight: 700; font-size: 0.95rem; border-bottom: 3px solid var(--gold); }
+    .compare-table thead th:first-child { text-align: left; left: 0; z-index: 4; min-width: 200px; }
+    .compare-table thead .col-sub { display: block; font-family: 'Inter', sans-serif; font-size: 0.65rem; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: var(--gold); margin-top: 4px; }
+    .compare-table thead .col-badge { display: inline-block; margin-top: 6px; padding: 3px 10px; border-radius: 50px; font-family: 'Inter', sans-serif; font-size: 0.6rem; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; }
+    .col-badge-gold { background: var(--gold); color: var(--navy); }
+    .col-badge-outline { background: transparent; border: 1px solid var(--gold); color: var(--gold); }
+    .compare-table tbody tr { transition: background 0.2s; }
+    .compare-table tbody tr:hover { background: rgba(201,168,76,0.06); }
+    .compare-table tbody tr:hover td[data-col] { background: rgba(201,168,76,0.04); }
+    .compare-table .cat-row td { background: linear-gradient(90deg, var(--gold-tint) 0%, rgba(253,246,227,0.4) 100%); padding: 10px 16px; font-size: 0.7rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--navy); border-top: 1px solid rgba(201,168,76,0.3); border-bottom: 1px solid rgba(201,168,76,0.3); }
+    .compare-table .benefit-cell { position: sticky; left: 0; z-index: 2; background: var(--white); padding: 14px 16px; font-weight: 500; color: var(--text-dark); border-bottom: 1px solid #f0ede6; box-shadow: 4px 0 8px -4px rgba(13,31,60,0.06); }
+    .compare-table tr:hover .benefit-cell { background: #fdfbf7; }
+    .compare-table tbody td { padding: 14px 12px; text-align: center; border-bottom: 1px solid #f0ede6; vertical-align: middle; transition: background 0.2s; }
+    .compare-table tbody td[data-col].highlight { background: rgba(13,31,60,0.04); }
+    .compare-table .total-row td { background: linear-gradient(180deg, var(--navy) 0%, #152a4a 100%); color: var(--white); border: none; padding: 18px 12px; font-weight: 600; }
+    .compare-table .total-row .benefit-cell { background: var(--navy); color: var(--gold); font-family: 'Playfair Display', serif; box-shadow: none; }
+    .compare-table .total-row .total-val { font-family: 'Playfair Display', serif; font-size: 1rem; color: var(--gold); }
+    .cell-yes, .cell-no, .cell-val { display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 32px; }
+    .cell-yes svg { color: var(--success); flex-shrink: 0; }
+    .cell-no svg { color: #c4c4c4; flex-shrink: 0; opacity: 0.7; }
+    .cell-val { font-weight: 600; color: var(--navy); font-size: 0.85rem; }
+    .cell-amt { display: block; font-size: 0.75rem; color: var(--muted); margin-top: 2px; font-weight: 500; }
+    .compare-legend { display: flex; gap: 24px; justify-content: center; flex-wrap: wrap; margin-top: 20px; font-size: 0.8rem; color: var(--muted); }
+    .compare-legend span { display: inline-flex; align-items: center; gap: 6px; }
+    @media (max-width: 900px) {
+      .compare-tabs { display: flex; }
+      .compare-table thead th:not(:first-child), .compare-table tbody td[data-col] { display: none; }
+      .compare-table thead th[data-col].mobile-show, .compare-table tbody td[data-col].mobile-show { display: table-cell; }
+      .compare-table { min-width: 0; }
+    }
+
+    /* ELIGIBILITY */
+    .eligibility { background: var(--ivory); }
+    .checklist-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; }
+    .checklist h3 { font-size: 1.25rem; color: var(--navy); margin-bottom: 24px; }
+    .checklist-item { display: flex; gap: 12px; align-items: flex-start; margin-bottom: 16px; }
+    .check-icon { flex-shrink: 0; width: 24px; height: 24px; color: var(--gold); margin-top: 2px; }
+
+    /* TIMELINE */
+    .timeline { display: flex; justify-content: space-between; position: relative; margin-top: 48px; }
+    .timeline::before { content: ''; position: absolute; top: 24px; left: 10%; right: 10%; height: 2px; border-top: 2px dashed var(--gold); z-index: 0; }
+    .timeline-step { flex: 1; text-align: center; position: relative; z-index: 1; padding: 0 12px; }
+    .step-circle { width: 48px; height: 48px; background: var(--gold); color: var(--navy); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.1rem; margin: 0 auto 16px; }
+    .timeline-step h4 { font-size: 1rem; color: var(--navy); margin-bottom: 8px; }
+    .timeline-step p { font-size: 0.85rem; color: var(--muted); }
+
+    /* IMPACT */
+    .impact { background: var(--navy); color: var(--white); text-align: center; }
+    .impact .section-title { color: var(--white); }
+    .impact-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 32px; margin-bottom: 60px; }
+    .impact-stat .stat-number { font-size: clamp(2rem, 4vw, 3rem); }
+    .impact-quote { max-width: 800px; margin: 0 auto; position: relative; padding: 40px; }
+    .impact-quote::before, .impact-quote::after { font-family: 'Playfair Display', serif; font-size: 80px; color: var(--gold); opacity: 0.4; line-height: 1; }
+    .impact-quote::before { content: '"'; position: absolute; top: 0; left: 0; }
+    .impact-quote::after { content: '"'; position: absolute; bottom: -20px; right: 0; }
+    .impact-quote blockquote { font-size: clamp(1rem, 2vw, 1.2rem); font-style: italic; line-height: 1.8; color: rgba(255,255,255,0.9); }
+    .impact-quote cite { display: block; margin-top: 20px; font-style: normal; color: var(--gold); font-size: 0.9rem; }
+
+    /* TESTIMONIALS */
+    .testimonials-slider { position: relative; max-width: 700px; margin: 0 auto; overflow: hidden; }
+    .testimonial-track { display: flex; transition: transform 0.5s ease; }
+    .testimonial-card { min-width: 100%; padding: 40px; background: var(--white); border-radius: 12px; text-align: center; box-shadow: 0 4px 20px rgba(0,0,0,0.06); }
+    .testimonial-avatar { width: 80px; height: 80px; border-radius: 50%; background: var(--navy); color: var(--gold); display: flex; align-items: center; justify-content: center; font-family: 'Playfair Display', serif; font-weight: 700; font-size: 1.5rem; margin: 0 auto 20px; }
+    .stars { color: var(--gold); margin-bottom: 16px; letter-spacing: 4px; }
+    .testimonial-card p { font-style: italic; color: var(--muted); margin-bottom: 20px; line-height: 1.7; }
+    .testimonial-card .name { font-weight: 600; color: var(--navy); }
+    .testimonial-card .meta { font-size: 0.85rem; color: var(--muted); }
+    .slider-controls { display: flex; justify-content: center; gap: 16px; margin-top: 24px; }
+    .slider-btn { width: 44px; height: 44px; border-radius: 50%; border: 2px solid var(--navy); background: var(--white); cursor: pointer; font-size: 1.2rem; color: var(--navy); transition: all 0.3s; }
+    .slider-btn:hover { background: var(--navy); color: var(--white); }
+
+    /* DEADLINE BANNER */
+    .deadline-banner { background: var(--gold-tint); border: 2px solid var(--gold); border-radius: 12px; padding: 24px 32px; margin: 40px auto; max-width: 1200px; display: flex; align-items: center; justify-content: space-between; gap: 24px; flex-wrap: wrap; position: relative; }
+    .deadline-banner p { flex: 1; font-size: 0.95rem; }
+    .banner-close { position: absolute; top: 12px; right: 16px; background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--muted); line-height: 1; }
+
+    /* FAQ */
+    .faq-item { background: var(--white); border-radius: 8px; margin-bottom: 12px; overflow: hidden; }
+    .faq-question { width: 100%; padding: 20px 24px; background: none; border: none; text-align: left; font-family: 'Playfair Display', serif; font-size: 1.05rem; font-weight: 700; color: var(--navy); cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+    .faq-icon { font-size: 1.5rem; color: var(--gold); transition: transform 0.3s; flex-shrink: 0; margin-left: 16px; }
+    .faq-item.open .faq-icon { transform: rotate(45deg); }
+    .faq-answer { max-height: 0; overflow: hidden; transition: max-height 0.4s ease; }
+    .faq-answer-inner { padding: 0 24px 20px; color: var(--muted); font-size: 0.95rem; line-height: 1.7; }
+    .faq-item.open .faq-answer { max-height: 500px; }
+
+    /* CONTACT */
+    .contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; }
+    .contact-info-item { display: flex; gap: 16px; margin-bottom: 24px; align-items: flex-start; }
+    .contact-icon { width: 44px; height: 44px; background: var(--gold-tint); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; flex-shrink: 0; }
+    .form-group { margin-bottom: 20px; }
+    .form-group label { display: block; margin-bottom: 6px; font-weight: 500; font-size: 0.9rem; }
+    .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 12px 16px; border: 1px solid #ddd; border-radius: 8px; font-family: 'Inter', sans-serif; font-size: 0.95rem; transition: border-color 0.3s; }
+    .form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline: none; border-color: var(--gold); }
+    .success-msg { background: #e8f5e9; color: var(--success); padding: 20px; border-radius: 8px; text-align: center; font-weight: 500; }
+
+    /* NEWSLETTER */
+    .newsletter { background: var(--navy); color: var(--white); text-align: center; padding: 60px 24px; }
+    .newsletter h2 { color: var(--white); margin-bottom: 8px; }
+    .newsletter p { color: rgba(255,255,255,0.7); margin-bottom: 24px; }
+    .newsletter-form { display: flex; gap: 12px; max-width: 500px; margin: 0 auto; flex-wrap: wrap; justify-content: center; }
+    .newsletter-form input { flex: 1; min-width: 200px; padding: 14px 20px; border: none; border-radius: 50px; font-size: 0.95rem; }
+    .newsletter-success { color: var(--gold); font-size: 1.1rem; font-weight: 500; }
+
+    /* FOOTER */
+    .footer { background: var(--footer-bg); color: var(--footer-link); padding: 60px 0 0; }
+    .footer-top { display: grid; grid-template-columns: 1.5fr repeat(4, 1fr); gap: 32px; margin-bottom: 40px; }
+    .footer-logo { font-family: 'Playfair Display', serif; font-weight: 700; color: var(--white); font-size: 1.1rem; margin-bottom: 8px; }
+    .footer-tagline { font-size: 0.85rem; }
+    .footer-col h4 { color: var(--white); font-family: 'Inter', sans-serif; font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 16px; }
+    .footer-col a { display: block; font-size: 0.85rem; margin-bottom: 10px; transition: color 0.3s; }
+    .footer-col a:hover { color: var(--gold); }
+    .footer-bottom { border-top: 1px solid var(--footer-border); padding: 20px 0; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; font-size: 0.8rem; }
+    .footer-bottom a { transition: color 0.3s; }
+    .footer-bottom a:hover { color: var(--gold); }
+
+    /* RESPONSIVE */
+    @media (max-width: 1024px) {
+      .nav-links, .nav-actions { display: none; }
+      .hamburger { display: flex; }
+      .about-grid { grid-template-columns: 1fr; }
+      .values-grid { grid-template-columns: 1fr; }
+      .scholarships-grid { grid-template-columns: 1fr; }
+      .checklist-grid { grid-template-columns: 1fr; }
+      .contact-grid { grid-template-columns: 1fr; }
+      .footer-top { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 768px) {
+      .hero-stats { grid-template-columns: repeat(2, 1fr); }
+      .impact-stats { grid-template-columns: repeat(2, 1fr); }
+      .timeline { flex-direction: column; gap: 32px; }
+      .timeline::before { display: none; }
+      .footer-top { grid-template-columns: 1fr; }
+      .deadline-banner { flex-direction: column; text-align: center; }
+    }
+    @media (max-width: 480px) {
+      .hero-stats { grid-template-columns: 1fr; }
+      .impact-stats { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav class="navbar" id="navbar">
+    <div class="nav-inner">
+      <a href="#" class="logo">
+        <img src="favicon.png" width="32" height="32" alt="The Curious Minds Foundation">
+        <span class="logo-text">The Curious Minds Foundation</span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="#home" class="nav-link active">Home</a></li>
+        <li><a href="#about" class="nav-link">About</a></li>
+        <li><a href="#scholarships" class="nav-link">Scholarships</a></li>
+        <li><a href="#eligibility" class="nav-link">Eligibility</a></li>
+        <li><a href="#apply" class="nav-link">How to Apply</a></li>
+        <li><a href="#faqs" class="nav-link">FAQs</a></li>
+        <li><a href="#contact" class="nav-link">Contact</a></li>
+      </ul>
+      <div class="nav-actions">
+        <a href="auth.html" class="btn btn-outline-navy nav-login">Login</a>
+        <a href="auth.html" class="btn btn-gold">Apply Now</a>
+      </div>
+      <button class="hamburger" id="hamburger" aria-label="Menu"><span></span><span></span><span></span></button>
+    </div>
+    <div class="mobile-menu" id="mobileMenu">
+      <a href="#home">Home</a><a href="#about">About</a><a href="#scholarships">Scholarships</a>
+      <a href="#eligibility">Eligibility</a><a href="#apply">How to Apply</a><a href="#faqs">FAQs</a><a href="#contact">Contact</a>
+      <a href="auth.html" class="btn btn-outline-navy">Login</a>
+      <a href="auth.html" class="btn btn-gold">Apply Now</a>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero" id="home">
+    <div class="hero-quote">"</div>
+    <div class="hero-content">
+      <p class="eyebrow hero-eyebrow">Scholarship Applications 2026/2027 Now Open</p>
+      <h1>Investing in Brilliant Minds, Building Better Futures</h1>
+      <p class="hero-sub">The Curious Minds Foundation awards merit and need-based scholarships to exceptional students across Nigeria and Africa — removing every financial barrier between talent and its full potential.</p>
+      <div class="hero-ctas">
+        <a href="auth.html" class="btn btn-gold">Apply for a Scholarship</a>
+        <a href="#about" class="btn btn-outline-white">Learn More</a>
+      </div>
+      <div class="hero-stats">
+        <div class="stat-item"><div class="stat-number" data-target="50" data-prefix="₦" data-suffix="M+">₦0M+</div><div class="stat-label">Awarded</div></div>
+        <div class="stat-item"><div class="stat-number" data-target="1200" data-suffix="+">0+</div><div class="stat-label">Scholars</div></div>
+        <div class="stat-item"><div class="stat-number" data-target="48">0</div><div class="stat-label">Partner Universities</div></div>
+        <div class="stat-item"><div class="stat-number" data-target="12">0</div><div class="stat-label">Years of Impact</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MARQUEE -->
+  <section class="marquee-section">
+    <p class="eyebrow marquee-label">Trusted by Leading Institutions</p>
+    <div class="marquee-wrapper">
+      <div class="marquee-track" id="marqueeTrack">
+        <span class="marquee-badge">University of Lagos</span><span class="marquee-badge">University of Ibadan</span>
+        <span class="marquee-badge">Covenant University</span><span class="marquee-badge">Obafemi Awolowo University</span>
+        <span class="marquee-badge">ABU Zaria</span><span class="marquee-badge">UNIBENIN</span><span class="marquee-badge">LASU</span>
+        <span class="marquee-badge">Babcock University</span><span class="marquee-badge">Pan-Atlantic University</span>
+        <span class="marquee-badge">Redeemer's University</span><span class="marquee-badge">University of Abuja</span>
+        <span class="marquee-badge">UNICAL</span><span class="marquee-badge">FUTA</span><span class="marquee-badge">UNIPORT</span>
+        <span class="marquee-badge">NDA Kaduna</span>
+        <span class="marquee-badge">University of Lagos</span><span class="marquee-badge">University of Ibadan</span>
+        <span class="marquee-badge">Covenant University</span><span class="marquee-badge">Obafemi Awolowo University</span>
+        <span class="marquee-badge">ABU Zaria</span><span class="marquee-badge">UNIBENIN</span><span class="marquee-badge">LASU</span>
+        <span class="marquee-badge">Babcock University</span><span class="marquee-badge">Pan-Atlantic University</span>
+        <span class="marquee-badge">Redeemer's University</span><span class="marquee-badge">University of Abuja</span>
+        <span class="marquee-badge">UNICAL</span><span class="marquee-badge">FUTA</span><span class="marquee-badge">UNIPORT</span>
+        <span class="marquee-badge">NDA Kaduna</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section class="section" id="about">
+    <div class="container">
+      <div class="about-grid">
+        <div class="about-image"><p class="about-quote">"Education is the most powerful tool you can give a child."</p></div>
+        <div>
+          <p class="eyebrow">Our Story</p>
+          <h2 class="section-title">Twelve Years of Opening Doors</h2>
+          <div class="gold-divider"></div>
+          <p style="margin-bottom:16px;color:var(--muted);">Founded in 2012 by a coalition of Nigerian business leaders, academics, and philanthropists, The Curious Minds Foundation was established with a single conviction: that financial circumstance should never determine intellectual destiny. Over the past twelve years, we have partnered with 48 universities, funded over 1,200 scholars, and disbursed more than ₦50 million in scholarships, grants, and support packages across Nigeria and the African continent.</p>
+          <p style="color:var(--muted);">Our mission is to eliminate financial barriers to education for talented but under-resourced students. Our vision is an Africa where every brilliant mind — regardless of postcode, family income, or circumstance — has unrestricted access to world-class education and the mentorship to transform that education into lasting impact.</p>
+        </div>
+      </div>
+      <div class="values-grid">
+        <div class="value-card">
+          <svg class="value-icon" viewBox="0 0 48 48" fill="none"><path d="M24 4L28 18H42L31 27L35 41L24 32L13 41L17 27L6 18H20L24 4Z" stroke="currentColor" stroke-width="2" fill="none"/></svg>
+          <h3>Excellence</h3><p>We fund those who refuse to be ordinary. We seek students who push boundaries and set new standards.</p>
+        </div>
+        <div class="value-card">
+          <svg class="value-icon" viewBox="0 0 48 48" fill="none"><circle cx="24" cy="24" r="18" stroke="currentColor" stroke-width="2"/><path d="M24 14V24L30 30" stroke="currentColor" stroke-width="2"/></svg>
+          <h3>Equity</h3><p>We reach those the system has overlooked. First-generation students and underserved communities are our priority.</p>
+        </div>
+        <div class="value-card">
+          <svg class="value-icon" viewBox="0 0 48 48" fill="none"><path d="M8 36L24 8L40 36H8Z" stroke="currentColor" stroke-width="2" fill="none"/><path d="M24 28V32" stroke="currentColor" stroke-width="2"/><circle cx="24" cy="24" r="2" fill="currentColor"/></svg>
+          <h3>Empowerment</h3><p>We build scholars, not just beneficiaries. Mentorship, networks, and leadership development are core to every award.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SCHOLARSHIPS -->
+  <section class="section" id="scholarships" style="background:var(--white);">
+    <div class="container">
+      <p class="eyebrow">What We Offer</p>
+      <h2 class="section-title">Our Scholarship Programs</h2>
+      <p class="section-intro">Our scholarships are not just financial awards — they are complete support packages designed to remove every barrier between a brilliant student and their full potential.</p>
+      <div class="scholarships-grid">
+        <!-- Card 1 -->
+        <div class="scholarship-card">
+          <span class="card-badge badge-gold">Flagship Award</span>
+          <h3>The Founders Merit Scholarship</h3>
+          <p class="card-tagline">For the exceptional. For the relentless.</p>
+          <p class="card-target">Top academic performers across all disciplines</p>
+          <div class="card-details" id="details1">
+            <ul>
+              <li><strong>Full Tuition Coverage</strong> — 100% of school fees paid directly to your institution every semester</li>
+              <li><strong>Weekly Living Allowance</strong> — ₦300,000 – ₦400,000 per week</li>
+              <li><strong>Laptop & Equipment Grant</strong> — One-time ₦250,000 grant</li>
+              <li><strong>Textbook Allowance</strong> — ₦50,000 per semester</li>
+              <li><strong>Research & Project Funding</strong> — Up to ₦500,000</li>
+              <li><strong>1-on-1 Professional Mentorship</strong> — Monthly career sessions</li>
+              <li><strong>Internship Placement Support</strong> — Priority SIWES referrals</li>
+              <li><strong>Networking Access</strong> — Annual Summit invitations</li>
+              <li><strong>LinkedIn Premium</strong> — 1-year subscription covered</li>
+              <li><strong>Certificate of Excellence</strong> — Recognised by 48 partner institutions</li>
+            </ul>
+            <div class="card-meta"><strong>Total Annual Value:</strong> Up to ₦25,000,000+<br><strong>Renewal:</strong> Minimum CGPA 4.0/5.0</div>
+          </div>
+          <button class="view-details-btn" onclick="toggleDetails('details1',this)">View Details</button>
+        </div>
+        <!-- Card 2 -->
+        <div class="scholarship-card">
+          <span class="card-badge badge-navy">Need-Based</span>
+          <h3>The Equity & Access Grant</h3>
+          <p class="card-tagline">Because potential has no postcode.</p>
+          <p class="card-target">First-generation university students with demonstrated financial need</p>
+          <div class="card-details" id="details2">
+            <ul>
+              <li><strong>Partial to Full Tuition</strong> — 50%–100% based on need assessment</li>
+              <li><strong>Weekly Living Allowance</strong> — ₦100,000 – ₦200,000 per week</li>
+              <li><strong>Accommodation Support</strong> — ₦150,000 per semester</li>
+              <li><strong>Feeding Subsidy</strong> — ₦30,000 monthly voucher</li>
+              <li><strong>Transport Allowance</strong> — ₦20,000 monthly</li>
+              <li><strong>Laptop Grant</strong> — ₦150,000 one-time</li>
+              <li><strong>Exam Fee Coverage</strong> — WAEC, NECO, JAMB fees covered</li>
+              <li><strong>Academic Coaching</strong> — Free tutoring every semester</li>
+              <li><strong>Peer Support Network</strong> — Equity Scholars community</li>
+              <li><strong>Emergency Hardship Fund</strong> — Up to ₦100,000</li>
+            </ul>
+            <div class="card-meta"><strong>Total Annual Value:</strong> Up to ₦8,000,000+<br><strong>Renewal:</strong> CGPA 3.0/5.0 + continued need</div>
+          </div>
+          <button class="view-details-btn" onclick="toggleDetails('details2',this)">View Details</button>
+        </div>
+        <!-- Card 3 -->
+        <div class="scholarship-card">
+          <span class="card-badge badge-gold">Women in STEM</span>
+          <h3>The Women in STEM Award</h3>
+          <p class="card-tagline">Africa's future is female. And it is brilliant.</p>
+          <p class="card-target">Female students in Science, Technology, Engineering, or Mathematics</p>
+          <div class="card-details" id="details3">
+            <ul>
+              <li><strong>Full Tuition Coverage</strong> — 100% of school fees each semester</li>
+              <li><strong>Weekly Living Allowance</strong> — ₦200,000 – ₦300,000 per week</li>
+              <li><strong>STEM Equipment Grant</strong> — ₦200,000 for lab kits and tools</li>
+              <li><strong>Coding Bootcamp</strong> — 3-month intensive tech programme</li>
+              <li><strong>Female Mentor Matching</strong> — Senior female STEM leader</li>
+              <li><strong>Conference Sponsorship</strong> — Travel and registration covered</li>
+              <li><strong>Research Grant</strong> — ₦300,000 for collaborative research</li>
+              <li><strong>LinkedIn Premium</strong> — 1-year sponsored access</li>
+              <li><strong>Internship Pipeline</strong> — Direct referrals to tech companies</li>
+              <li><strong>Women in STEM Community</strong> — Private mentoring circle</li>
+            </ul>
+            <div class="card-meta"><strong>Total Annual Value:</strong> Up to ₦15,000,000+<br><strong>Renewal:</strong> Minimum CGPA 3.5/5.0</div>
+          </div>
+          <button class="view-details-btn" onclick="toggleDetails('details3',this)">View Details</button>
+        </div>
+        <!-- Card 4 -->
+        <div class="scholarship-card">
+          <span class="card-badge badge-navy">Leadership Award</span>
+          <h3>The Community Leaders Bursary</h3>
+          <p class="card-tagline">Lead your community. We will fund your future.</p>
+          <p class="card-target">Students with demonstrated community service and grassroots leadership</p>
+          <div class="card-details" id="details4">
+            <ul>
+              <li><strong>Partial Tuition</strong> — 75% of school fees per semester</li>
+              <li><strong>Weekly Living Allowance</strong> — ₦100,000 – ₦150,000 per week</li>
+              <li><strong>Leadership Programme</strong> — 6-month training sponsored</li>
+              <li><strong>Community Project Fund</strong> — Up to ₦1,000,000</li>
+              <li><strong>NGO Internship Placement</strong> — Civil society organisations</li>
+              <li><strong>Public Speaking Training</strong> — Quarterly workshops</li>
+              <li><strong>Travel Grant</strong> — Up to ₦200,000 for conferences</li>
+              <li><strong>Board Mentorship</strong> — Quarterly sessions with trustees</li>
+              <li><strong>Certificate of Leadership</strong> — Jointly issued with partner institution</li>
+            </ul>
+            <div class="card-meta"><strong>Total Annual Value:</strong> Up to ₦10,000,000+<br><strong>Renewal:</strong> CGPA 2.75/5.0 + community engagement</div>
+          </div>
+          <button class="view-details-btn" onclick="toggleDetails('details4',this)">View Details</button>
+        </div>
+      </div>
+
+      <div class="compare-section" id="compare">
+        <div class="compare-header">
+          <p class="eyebrow">Side-by-Side Analysis</p>
+          <h3 class="section-title" style="font-size:clamp(1.4rem,3vw,1.85rem);">Compare Scholarship Benefits at a Glance</h3>
+          <p>Select a programme column to explore how each award supports your academic journey.</p>
+        </div>
+        <div class="compare-tabs" id="compareTabs">
+          <button class="compare-tab active" data-col="1">Founders Merit</button>
+          <button class="compare-tab" data-col="2">Equity & Access</button>
+          <button class="compare-tab" data-col="3">Women in STEM</button>
+          <button class="compare-tab" data-col="4">Community Leaders</button>
+        </div>
+        <div class="compare-matrix">
+          <div class="compare-scroll">
+            <table class="compare-table" id="compareTable">
+              <thead>
+                <tr>
+                  <th>Benefit Category</th>
+                  <th data-col="1" class="mobile-show">Founders Merit<span class="col-sub">Flagship Award</span><span class="col-badge col-badge-gold">Merit-Based</span></th>
+                  <th data-col="2">Equity & Access<span class="col-sub">Need-Based Grant</span><span class="col-badge col-badge-outline">First-Gen Focus</span></th>
+                  <th data-col="3">Women in STEM<span class="col-sub">STEM Excellence</span><span class="col-badge col-badge-gold">Female Scholars</span></th>
+                  <th data-col="4">Community Leaders<span class="col-sub">Leadership Bursary</span><span class="col-badge col-badge-outline">Service Award</span></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr class="cat-row"><td colspan="5">Core Financial Support</td></tr>
+                <tr>
+                  <td class="benefit-cell">Tuition Coverage</td>
+                  <td data-col="1" class="mobile-show"><span class="cell-val">100%</span></td>
+                  <td data-col="2"><span class="cell-val">50–100%</span></td>
+                  <td data-col="3"><span class="cell-val">100%</span></td>
+                  <td data-col="4"><span class="cell-val">75%</span></td>
+                </tr>
+                <tr>
+                  <td class="benefit-cell">Weekly Living Allowance</td>
+                  <td data-col="1" class="mobile-show"><span class="cell-val">₦300–400k</span><span class="cell-amt">per week</span></td>
+                  <td data-col="2"><span class="cell-val">₦100–200k</span><span class="cell-amt">per week</span></td>
+                  <td data-col="3"><span class="cell-val">₦200–300k</span><span class="cell-amt">per week</span></td>
+                  <td data-col="4"><span class="cell-val">₦100–150k</span><span class="cell-amt">per week</span></td>
+                </tr>
+                <tr class="cat-row"><td colspan="5">Academic & Career Resources</td></tr>
+                <tr>
+                  <td class="benefit-cell">Laptop / Equipment Grant</td>
+                  <td data-col="1" class="mobile-show"><span class="cell-yes"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="2.5"/><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/></svg></span><span class="cell-amt">₦250,000</span></td>
+                  <td data-col="2"><span class="cell-yes"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="2.5"/><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/></svg></span><span class="cell-amt">₦150,000</span></td>
+                  <td data-col="3"><span class="cell-yes"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="2.5"/><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/></svg></span><span class="cell-amt">₦200,000</span></td>
+                  <td data-col="4"><span class="cell-no"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M8 8l8 8M16 8l-8 8" stroke="currentColor" stroke-width="2"/></svg></span></td>
+                </tr>
+                <tr>
+                  <td class="benefit-cell">Mentorship Programme</td>
+                  <td data-col="1" class="mobile-show"><span class="cell-yes"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="2.5"/><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/></svg></span></td>
+                  <td data-col="2"><span class="cell-yes"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="2.5"/><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/></svg></span></td>
+                  <td data-col="3"><span class="cell-yes"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="2.5"/><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/></svg></span></td>
+                  <td data-col="4"><span class="cell-yes"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="2.5"/><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/></svg></span></td>
+                </tr>
+                <tr>
+                  <td class="benefit-cell">Internship Placement</td>
+                  <td data-col="1" class="mobile-show"><span class="cell-yes"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="2.5"/><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/></svg></span></td>
+                  <td data-col="2"><span class="cell-no"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M8 8l8 8M16 8l-8 8" stroke="currentColor" stroke-width="2"/></svg></span></td>
+                  <td data-col="3"><span class="cell-yes"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="2.5"/><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/></svg></span></td>
+                  <td data-col="4"><span class="cell-yes"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="2.5"/><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/></svg></span></td>
+                </tr>
+                <tr>
+                  <td class="benefit-cell">Research / Project Fund</td>
+                  <td data-col="1" class="mobile-show"><span class="cell-yes"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="2.5"/><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/></svg></span><span class="cell-amt">₦500,000</span></td>
+                  <td data-col="2"><span class="cell-no"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M8 8l8 8M16 8l-8 8" stroke="currentColor" stroke-width="2"/></svg></span></td>
+                  <td data-col="3"><span class="cell-yes"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="2.5"/><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/></svg></span><span class="cell-amt">₦300,000</span></td>
+                  <td data-col="4"><span class="cell-no"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M8 8l8 8M16 8l-8 8" stroke="currentColor" stroke-width="2"/></svg></span></td>
+                </tr>
+                <tr class="cat-row"><td colspan="5">Specialised Programmes</td></tr>
+                <tr>
+                  <td class="benefit-cell">Community Project Fund</td>
+                  <td data-col="1" class="mobile-show"><span class="cell-no"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M8 8l8 8M16 8l-8 8" stroke="currentColor" stroke-width="2"/></svg></span></td>
+                  <td data-col="2"><span class="cell-no"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M8 8l8 8M16 8l-8 8" stroke="currentColor" stroke-width="2"/></svg></span></td>
+                  <td data-col="3"><span class="cell-no"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M8 8l8 8M16 8l-8 8" stroke="currentColor" stroke-width="2"/></svg></span></td>
+                  <td data-col="4"><span class="cell-yes"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="2.5"/><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/></svg></span><span class="cell-amt">₦1,000,000</span></td>
+                </tr>
+                <tr>
+                  <td class="benefit-cell">Emergency Hardship Fund</td>
+                  <td data-col="1" class="mobile-show"><span class="cell-no"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M8 8l8 8M16 8l-8 8" stroke="currentColor" stroke-width="2"/></svg></span></td>
+                  <td data-col="2"><span class="cell-yes"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="2.5"/><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/></svg></span><span class="cell-amt">₦100,000</span></td>
+                  <td data-col="3"><span class="cell-no"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M8 8l8 8M16 8l-8 8" stroke="currentColor" stroke-width="2"/></svg></span></td>
+                  <td data-col="4"><span class="cell-no"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M8 8l8 8M16 8l-8 8" stroke="currentColor" stroke-width="2"/></svg></span></td>
+                </tr>
+                <tr>
+                  <td class="benefit-cell">Conference / Event Access</td>
+                  <td data-col="1" class="mobile-show"><span class="cell-yes"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="2.5"/><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/></svg></span></td>
+                  <td data-col="2"><span class="cell-no"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M8 8l8 8M16 8l-8 8" stroke="currentColor" stroke-width="2"/></svg></span></td>
+                  <td data-col="3"><span class="cell-yes"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="2.5"/><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/></svg></span></td>
+                  <td data-col="4"><span class="cell-yes"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="2.5"/><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/></svg></span></td>
+                </tr>
+                <tr>
+                  <td class="benefit-cell">Feeding / Housing Support</td>
+                  <td data-col="1" class="mobile-show"><span class="cell-no"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M8 8l8 8M16 8l-8 8" stroke="currentColor" stroke-width="2"/></svg></span></td>
+                  <td data-col="2"><span class="cell-yes"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="2.5"/><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/></svg></span></td>
+                  <td data-col="3"><span class="cell-no"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M8 8l8 8M16 8l-8 8" stroke="currentColor" stroke-width="2"/></svg></span></td>
+                  <td data-col="4"><span class="cell-no"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M8 8l8 8M16 8l-8 8" stroke="currentColor" stroke-width="2"/></svg></span></td>
+                </tr>
+                <tr>
+                  <td class="benefit-cell">Leadership Training</td>
+                  <td data-col="1" class="mobile-show"><span class="cell-no"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M8 8l8 8M16 8l-8 8" stroke="currentColor" stroke-width="2"/></svg></span></td>
+                  <td data-col="2"><span class="cell-no"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M8 8l8 8M16 8l-8 8" stroke="currentColor" stroke-width="2"/></svg></span></td>
+                  <td data-col="3"><span class="cell-no"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M8 8l8 8M16 8l-8 8" stroke="currentColor" stroke-width="2"/></svg></span></td>
+                  <td data-col="4"><span class="cell-yes"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="2.5"/><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/></svg></span></td>
+                </tr>
+                <tr>
+                  <td class="benefit-cell">STEM Bootcamp</td>
+                  <td data-col="1" class="mobile-show"><span class="cell-no"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M8 8l8 8M16 8l-8 8" stroke="currentColor" stroke-width="2"/></svg></span></td>
+                  <td data-col="2"><span class="cell-no"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M8 8l8 8M16 8l-8 8" stroke="currentColor" stroke-width="2"/></svg></span></td>
+                  <td data-col="3"><span class="cell-yes"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="2.5"/><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/></svg></span></td>
+                  <td data-col="4"><span class="cell-no"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M8 8l8 8M16 8l-8 8" stroke="currentColor" stroke-width="2"/></svg></span></td>
+                </tr>
+                <tr class="total-row">
+                  <td class="benefit-cell">Total Annual Value</td>
+                  <td data-col="1" class="mobile-show"><span class="total-val">₦25M+</span></td>
+                  <td data-col="2"><span class="total-val">₦8M+</span></td>
+                  <td data-col="3"><span class="total-val">₦15M+</span></td>
+                  <td data-col="4"><span class="total-val">₦10M+</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="compare-legend">
+          <span><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 12l2 2 4-4" stroke="#2D7A4F" stroke-width="2.5"/><circle cx="12" cy="12" r="10" stroke="#2D7A4F" stroke-width="2"/></svg> Included</span>
+          <span><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M8 8l8 8M16 8l-8 8" stroke="#c4c4c4" stroke-width="2"/></svg> Not included</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ELIGIBILITY -->
+  <section class="section eligibility" id="eligibility">
+    <div class="container">
+      <p class="eyebrow">Requirements</p>
+      <h2 class="section-title">Who Can Apply?</h2>
+      <div class="gold-divider"></div>
+      <div class="checklist-grid">
+        <div class="checklist">
+          <h3>General Requirements</h3>
+          <div class="checklist-item"><svg class="check-icon" viewBox="0 0 24 24" fill="none"><path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/></svg><span>Nigerian citizen or African resident with valid ID</span></div>
+          <div class="checklist-item"><svg class="check-icon" viewBox="0 0 24 24" fill="none"><path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/></svg><span>Minimum CGPA of 2.75/5.0 (varies by scholarship)</span></div>
+          <div class="checklist-item"><svg class="check-icon" viewBox="0 0 24 24" fill="none"><path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/></svg><span>Currently enrolled in or admitted to an accredited university</span></div>
+          <div class="checklist-item"><svg class="check-icon" viewBox="0 0 24 24" fill="none"><path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/></svg><span>Demonstrated financial need OR exceptional academic merit</span></div>
+          <div class="checklist-item"><svg class="check-icon" viewBox="0 0 24 24" fill="none"><path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/></svg><span>No active disciplinary record from your institution</span></div>
+          <div class="checklist-item"><svg class="check-icon" viewBox="0 0 24 24" fill="none"><path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/></svg><span>Must not currently hold another full scholarship</span></div>
+          <div class="checklist-item"><svg class="check-icon" viewBox="0 0 24 24" fill="none"><path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/></svg><span>Age: 16–30 years at time of application</span></div>
+        </div>
+        <div class="checklist">
+          <h3>Required Documents</h3>
+          <div class="checklist-item"><svg class="check-icon" viewBox="0 0 24 24" fill="none"><path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/></svg><span>Current academic transcript (officially stamped)</span></div>
+          <div class="checklist-item"><svg class="check-icon" viewBox="0 0 24 24" fill="none"><path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/></svg><span>Admission letter or current enrollment confirmation</span></div>
+          <div class="checklist-item"><svg class="check-icon" viewBox="0 0 24 24" fill="none"><path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/></svg><span>Two reference letters (one academic, one character)</span></div>
+          <div class="checklist-item"><svg class="check-icon" viewBox="0 0 24 24" fill="none"><path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/></svg><span>Personal statement essay (minimum 200 words)</span></div>
+          <div class="checklist-item"><svg class="check-icon" viewBox="0 0 24 24" fill="none"><path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/></svg><span>Proof of financial need (bank statement or income declaration)</span></div>
+          <div class="checklist-item"><svg class="check-icon" viewBox="0 0 24 24" fill="none"><path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/></svg><span>Valid government-issued ID (NIN, passport, or voter's card)</span></div>
+          <div class="checklist-item"><svg class="check-icon" viewBox="0 0 24 24" fill="none"><path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/></svg><span>Passport photograph (recent, clear background)</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW TO APPLY -->
+  <section class="section" id="apply">
+    <div class="container">
+      <p class="eyebrow">Get Started</p>
+      <h2 class="section-title">The Application Process</h2>
+      <div class="timeline">
+        <div class="timeline-step"><div class="step-circle">1</div><h4>Create an Account</h4><p>Register on our portal with your email address and basic details.</p></div>
+        <div class="timeline-step"><div class="step-circle">2</div><h4>Fill Your Application Form</h4><p>Complete the full scholarship application including personal, academic, and financial information.</p></div>
+        <div class="timeline-step"><div class="step-circle">3</div><h4>Take All Three Required Tests</h4><p>Complete the Discipline Exam, Aptitude & Reasoning Test, and Situational Judgement Test.</p></div>
+        <div class="timeline-step"><div class="step-circle">4</div><h4>Submit Supporting Documents</h4><p>Upload all required documents listed in the eligibility section.</p></div>
+        <div class="timeline-step"><div class="step-circle">5</div><h4>Await Review & Decision</h4><p>Our panel reviews all complete applications within 6–8 weeks.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- IMPACT -->
+  <section class="section impact" id="impact">
+    <div class="container">
+      <h2 class="section-title">Our Impact in Numbers</h2>
+      <div class="impact-stats">
+        <div class="impact-stat"><div class="stat-number" data-target="1200" data-suffix="+">0+</div><div class="stat-label">Students Funded</div></div>
+        <div class="impact-stat"><div class="stat-number" data-target="48">0</div><div class="stat-label">Partner Universities</div></div>
+        <div class="impact-stat"><div class="stat-number" data-target="15">0</div><div class="stat-label">States Reached</div></div>
+        <div class="impact-stat"><div class="stat-number" data-target="94" data-suffix="%">0%</div><div class="stat-label">Graduate Rate</div></div>
+      </div>
+      <div class="impact-quote">
+        <blockquote>"This scholarship didn't just pay my fees — it changed the trajectory of my entire family. I am the first engineer in my village because The Curious Minds Foundation believed in me when no one else could."</blockquote>
+        <cite>— Chidera Okafor, Mechanical Engineering, University of Lagos, Class of 2022</cite>
+      </div>
+    </div>
+  </section>
+
+  <!-- TESTIMONIALS -->
+  <section class="section" id="testimonials">
+    <div class="container">
+      <p class="eyebrow" style="text-align:center;">Scholar Stories</p>
+      <h2 class="section-title" style="text-align:center;">Voices of Our Scholars</h2>
+      <div class="testimonials-slider" id="testimonialSlider">
+        <div class="testimonial-track" id="testimonialTrack">
+          <div class="testimonial-card">
+            <div class="testimonial-avatar">FA</div>
+            <div class="stars">★★★★★</div>
+            <p>"I never imagined I could attend university — my father is a farmer and my mother a petty trader. The Equity & Access Grant did not just cover my fees, it gave me dignity and a future I now fight to honour every day."</p>
+            <div class="name">Fatima Aliyu</div><div class="meta">Agricultural Science, ABU Zaria, 300L</div>
+          </div>
+          <div class="testimonial-card">
+            <div class="testimonial-avatar">AN</div>
+            <div class="stars">★★★★★</div>
+            <p>"The Women in STEM Award introduced me to my mentor, who is now my boss. The Foundation does not just give money — they open doors that most people do not even know exist."</p>
+            <div class="name">Adaeze Nnaji</div><div class="meta">Computer Science, Covenant University, Final Year</div>
+          </div>
+          <div class="testimonial-card">
+            <div class="testimonial-avatar">ET</div>
+            <div class="stars">★★★★★</div>
+            <p>"I used the Community Project Fund to build a reading room in my village in Benue State. Forty children now have a place to study. That is what this scholarship really means."</p>
+            <div class="name">Emmanuel Terfa</div><div class="meta">Education, University of Abuja, 400L</div>
+          </div>
+          <div class="testimonial-card">
+            <div class="testimonial-avatar">OA</div>
+            <div class="stars">★★★★★</div>
+            <p>"The Founders Merit Scholarship pushed me to be the best version of myself. The monthly mentorship sessions alone were worth more than any financial award. My mentor helped me secure a placement at Dangote before I even graduated."</p>
+            <div class="name">Olumide Adeyemi</div><div class="meta">Chemical Engineering, OAU Ile-Ife, Graduate</div>
+          </div>
+        </div>
+        <div class="slider-controls">
+          <button class="slider-btn" id="prevBtn" aria-label="Previous">‹</button>
+          <button class="slider-btn" id="nextBtn" aria-label="Next">›</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- DEADLINE BANNER -->
+  <div class="container">
+    <div class="deadline-banner" id="deadlineBanner">
+      <button class="banner-close" id="bannerClose" aria-label="Dismiss">×</button>
+      <p>📅 <strong>Applications for the 2026/2027 Scholarship Cycle are NOW OPEN.</strong> Deadline: August 31, 2026. Late applications will NOT be accepted.</p>
+      <a href="auth.html" class="btn btn-navy">Apply Before Deadline</a>
+    </div>
+  </div>
+
+  <!-- FAQ -->
+  <section class="section" id="faqs">
+    <div class="container" style="max-width:800px;">
+      <p class="eyebrow" style="text-align:center;">Got Questions?</p>
+      <h2 class="section-title" style="text-align:center;">Frequently Asked Questions</h2>
+      <div class="faq-list" id="faqList">
+        <div class="faq-item"><button class="faq-question">Who is eligible to apply?<span class="faq-icon">+</span></button><div class="faq-answer"><div class="faq-answer-inner">Any Nigerian citizen or African resident aged 16–30, currently enrolled in or admitted to an accredited university, with a minimum CGPA of 2.75/5.0 (higher for some scholarships). Financial need is required for the Equity & Access Grant; exceptional merit is required for the Founders Merit Scholarship.</div></div></div>
+        <div class="faq-item"><button class="faq-question">Can I apply for more than one scholarship?<span class="faq-icon">+</span></button><div class="faq-answer"><div class="faq-answer-inner">You may apply for one scholarship per cycle. Our admissions panel will assess your profile and may consider you for an alternative award if you do not qualify for your first choice.</div></div></div>
+        <div class="faq-item"><button class="faq-question">When will I receive a decision?<span class="faq-icon">+</span></button><div class="faq-answer"><div class="faq-answer-inner">All complete applications — including passed tests and submitted documents — are reviewed within 6–8 weeks of the application deadline. You will be notified exclusively via the email address used during registration.</div></div></div>
+        <div class="faq-item"><button class="faq-question">Is the scholarship renewable?<span class="faq-icon">+</span></button><div class="faq-answer"><div class="faq-answer-inner">Yes. All four scholarships are renewable each academic year provided you meet the minimum CGPA threshold and submit a renewal application before the cycle deadline. Renewal is not automatic.</div></div></div>
+        <div class="faq-item"><button class="faq-question">Do I need to be currently enrolled?<span class="faq-icon">+</span></button><div class="faq-answer"><div class="faq-answer-inner">You must be enrolled or have a valid admission offer from an accredited Nigerian university at the time of application. Gap year students awaiting admission may not apply in that cycle.</div></div></div>
+        <div class="faq-item"><button class="faq-question">How are funds disbursed?<span class="faq-icon">+</span></button><div class="faq-answer"><div class="faq-answer-inner">Tuition is paid directly to your institution. Living allowances are disbursed weekly to your registered bank account. Grants (laptop, research, project fund) are paid as one-time transfers after documentation verification.</div></div></div>
+        <div class="faq-item"><button class="faq-question">Can international students apply?<span class="faq-icon">+</span></button><div class="faq-answer"><div class="faq-answer-inner">The Foundation currently accepts applications from students enrolled in accredited Nigerian universities regardless of nationality. Non-Nigerian applicants must hold a valid residence permit and provide proof of enrollment.</div></div></div>
+        <div class="faq-item"><button class="faq-question">What happens after I am selected?<span class="faq-icon">+</span></button><div class="faq-answer"><div class="faq-answer-inner">Selected scholars attend a mandatory onboarding session (virtual or in-person), sign a Scholar Agreement, and are paired with a mentor. Disbursements begin within 2 weeks of onboarding completion.</div></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section class="section" id="contact" style="background:var(--white);">
+    <div class="container">
+      <p class="eyebrow">Reach Out</p>
+      <h2 class="section-title">Get in Touch</h2>
+      <div class="contact-grid">
+        <div>
+          <div class="contact-info-item"><div class="contact-icon">📧</div><div><strong>Email</strong><br>curiousmindscholarships@gmail.com</div></div>
+          <div class="contact-info-item"><div class="contact-icon">📞</div><div><strong>Phone</strong><br>+1 (747)280-8761</div></div>
+          <div class="contact-info-item"><div class="contact-icon">📍</div><div><strong>Address</strong><br>102 Kuhl Avenue, Georgia</div></div>
+          <div class="contact-info-item"><div class="contact-icon">🕐</div><div><strong>Office Hours</strong><br>Monday – Friday, 9:00am – 5:00pm WAT</div></div>
+        </div>
+        <div>
+          <form id="contactForm">
+            <div class="form-group"><label for="contactName">Full Name</label><input type="text" id="contactName" required></div>
+            <div class="form-group"><label for="contactEmail">Email Address</label><input type="email" id="contactEmail" required></div>
+            <div class="form-group"><label for="contactSubject">Subject</label>
+              <select id="contactSubject" required>
+                <option value="">Select a subject</option>
+                <option>General Inquiry</option><option>Application Help</option><option>Partnership</option><option>Press</option><option>Other</option>
+              </select>
+            </div>
+            <div class="form-group"><label for="contactMessage">Message</label><textarea id="contactMessage" rows="6" required></textarea></div>
+            <button type="submit" class="btn btn-gold">Send Message</button>
+          </form>
+          <div class="success-msg" id="contactSuccess" style="display:none;">✅ Thank you for reaching out. We will respond within 2 business days.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- NEWSLETTER -->
+  <section class="newsletter" id="newsletter">
+    <h2>Stay Updated on Scholarship Opportunities</h2>
+    <p>Join 8,000+ students who receive our scholarship alerts, deadlines, and tips.</p>
+    <form class="newsletter-form" id="newsletterForm">
+      <input type="email" placeholder="Enter your email address" required>
+      <button type="submit" class="btn btn-gold">Subscribe</button>
+    </form>
+    <div class="newsletter-success" id="newsletterSuccess" style="display:none;">🎉 You're subscribed! Watch your inbox.</div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-top">
+        <div>
+          <div class="footer-logo">The Curious Minds Foundation</div>
+          <p class="footer-tagline">Empowering the next generation of African leaders.</p>
+        </div>
+        <div class="footer-col"><h4>About</h4><a href="#about">Our Story</a><a href="#">Our Team</a><a href="#">Annual Report</a><a href="#">Press</a><a href="#">Careers</a></div>
+        <div class="footer-col"><h4>Scholarships</h4><a href="#scholarships">Founders Merit</a><a href="#scholarships">Equity & Access</a><a href="#scholarships">Women in STEM</a><a href="#scholarships">Community Leaders</a></div>
+        <div class="footer-col"><h4>Quick Links</h4><a href="auth.html">Apply Now</a><a href="#eligibility">Eligibility</a><a href="#apply">How to Apply</a><a href="#faqs">FAQs</a><a href="#contact">Contact</a></div>
+        <div class="footer-col"><h4>Contact</h4><a href="mailto:curiousmindscholarships@gmail.com">curiousmindscholarships@gmail.com</a><a href="tel:+1 (747)280-8761">+1 (747)280-8761</a><a href="#">102 Kuhl Avenue, Georgia</a><a href="#">Mon–Fri, 9am–5pm WAT</a></div>
+      </div>
+      <div class="footer-bottom">
+        <span>© 2025 The Curious Minds Foundation. All Rights Reserved.</span>
+        <span><a href="#">Privacy Policy</a> | <a href="#">Terms of Use</a> | <a href="#">Accessibility</a></span>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Navbar scroll
+    const navbar = document.getElementById('navbar');
+    window.addEventListener('scroll', () => {
+      navbar.classList.toggle('scrolled', window.scrollY > 80);
+      document.querySelectorAll('.nav-link').forEach(link => {
+        const section = document.querySelector(link.getAttribute('href'));
+        if (section) {
+          const rect = section.getBoundingClientRect();
+          if (rect.top <= 100 && rect.bottom >= 100) link.classList.add('active');
+          else link.classList.remove('active');
+        }
+      });
+    });
+
+    // Hamburger
+    const hamburger = document.getElementById('hamburger');
+    const mobileMenu = document.getElementById('mobileMenu');
+    hamburger.addEventListener('click', () => {
+      hamburger.classList.toggle('active');
+      mobileMenu.classList.toggle('open');
+    });
+    mobileMenu.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
+      hamburger.classList.remove('active');
+      mobileMenu.classList.remove('open');
+    }));
+
+    // Smooth scroll
+    document.querySelectorAll('a[href^="#"]').forEach(a => {
+      a.addEventListener('click', e => {
+        const href = a.getAttribute('href');
+        if (href === '#') return;
+        e.preventDefault();
+        document.querySelector(href)?.scrollIntoView({ behavior: 'smooth' });
+      });
+    });
+
+    // Counters
+    function animateCounters() {
+      document.querySelectorAll('.stat-number[data-target]').forEach(el => {
+        const target = parseInt(el.dataset.target);
+        const prefix = el.dataset.prefix || '';
+        const suffix = el.dataset.suffix || '';
+        let current = 0;
+        const step = Math.ceil(target / 60);
+        const timer = setInterval(() => {
+          current += step;
+          if (current >= target) { current = target; clearInterval(timer); }
+          el.textContent = prefix + current.toLocaleString() + suffix;
+        }, 30);
+      });
+    }
+    animateCounters();
+
+    // Scholarship details toggle
+    function toggleDetails(id, btn) {
+      const el = document.getElementById(id);
+      el.classList.toggle('open');
+      btn.textContent = el.classList.contains('open') ? 'Hide Details' : 'View Details';
+    }
+
+    // Testimonials slider
+    let currentSlide = 0;
+    const track = document.getElementById('testimonialTrack');
+    const slides = track.children.length;
+    let autoSlide;
+
+    function goToSlide(n) {
+      currentSlide = (n + slides) % slides;
+      track.style.transform = `translateX(-${currentSlide * 100}%)`;
+    }
+    document.getElementById('prevBtn').addEventListener('click', () => goToSlide(currentSlide - 1));
+    document.getElementById('nextBtn').addEventListener('click', () => goToSlide(currentSlide + 1));
+    function startAutoSlide() { autoSlide = setInterval(() => goToSlide(currentSlide + 1), 5000); }
+    function stopAutoSlide() { clearInterval(autoSlide); }
+    document.getElementById('testimonialSlider').addEventListener('mouseenter', stopAutoSlide);
+    document.getElementById('testimonialSlider').addEventListener('mouseleave', startAutoSlide);
+    startAutoSlide();
+
+    // Deadline banner dismiss
+    document.getElementById('bannerClose').addEventListener('click', () => {
+      document.getElementById('deadlineBanner').remove();
+    });
+
+    // FAQ accordion
+    document.querySelectorAll('.faq-question').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const item = btn.parentElement;
+        const wasOpen = item.classList.contains('open');
+        document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
+        if (!wasOpen) item.classList.add('open');
+      });
+    });
+
+    // Contact form
+    document.getElementById('contactForm').addEventListener('submit', e => {
+      e.preventDefault();
+      document.getElementById('contactForm').style.display = 'none';
+      document.getElementById('contactSuccess').style.display = 'block';
+    });
+
+    // Newsletter
+    document.getElementById('newsletterForm').addEventListener('submit', e => {
+      e.preventDefault();
+      document.getElementById('newsletterForm').style.display = 'none';
+      document.getElementById('newsletterSuccess').style.display = 'block';
+    });
+
+    // Comparison matrix — mobile tabs & desktop column highlight
+    document.querySelectorAll('.compare-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        const col = tab.dataset.col;
+        document.querySelectorAll('.compare-tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        document.querySelectorAll('#compareTable [data-col]').forEach(cell => {
+          cell.classList.toggle('mobile-show', cell.dataset.col === col);
+        });
+      });
+    });
+    document.querySelectorAll('#compareTable thead th[data-col]').forEach(th => {
+      const col = th.dataset.col;
+      th.addEventListener('mouseenter', () => {
+        document.querySelectorAll(`#compareTable td[data-col="${col}"]`).forEach(td => td.classList.add('highlight'));
+      });
+      th.addEventListener('mouseleave', () => {
+        document.querySelectorAll('#compareTable td[data-col]').forEach(td => td.classList.remove('highlight'));
+      });
+    });
+  </script>
+</body>
+</html>

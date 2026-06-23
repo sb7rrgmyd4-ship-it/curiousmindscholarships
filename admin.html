@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/png" href="favicon.png">
+  <link rel="apple-touch-icon" href="favicon.png">
+  <title>Admin Dashboard — The Curious Minds Foundation</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
+  <style>
+    :root{--navy:#0D1F3C;--gold:#C9A84C;--ivory:#F8F6F1;--text-dark:#1A1A2E;--muted:#6B7280;--white:#FFFFFF;--danger:#C0392B;--success:#2D7A4F;--sidebar:240px;}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:'Inter',sans-serif;background:var(--ivory);color:var(--text-dark);}
+    h1,h2,h3{font-family:'Playfair Display',serif;color:var(--navy);}
+    .login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;}
+    .login-card{background:var(--white);padding:40px;border-radius:16px;box-shadow:0 10px 40px rgba(0,0,0,0.1);max-width:400px;width:100%;}
+    .login-card h1{text-align:center;font-size:1.25rem;margin-bottom:24px;}
+    .form-group{margin-bottom:16px;}
+    .form-group label{display:block;margin-bottom:6px;font-size:0.9rem;font-weight:500;}
+    .form-group input{width:100%;padding:12px;border:1px solid #ddd;border-radius:8px;font-size:0.95rem;}
+    .btn{padding:12px 24px;border-radius:50px;border:none;font-weight:600;cursor:pointer;min-height:44px;}
+    .btn-gold{background:var(--gold);color:var(--navy);width:100%;}
+    .login-error{color:var(--danger);font-size:0.85rem;margin-bottom:12px;display:none;}
+    .login-error.show{display:block;}
+    .dashboard{display:none;}
+    .dashboard.active{display:flex;min-height:100vh;}
+    .sidebar{width:var(--sidebar);background:var(--navy);color:var(--white);position:fixed;top:0;left:0;bottom:0;padding:24px 0;z-index:100;transition:width 0.3s;overflow-y:auto;}
+    .sidebar-logo{padding:0 20px 24px;font-family:'Playfair Display',serif;font-weight:700;font-size:0.95rem;border-bottom:1px solid rgba(255,255,255,0.1);margin-bottom:16px;}
+    .sidebar-nav a{display:flex;align-items:center;gap:12px;padding:12px 20px;color:rgba(255,255,255,0.8);font-size:0.9rem;cursor:pointer;transition:all 0.2s;text-decoration:none;}
+    .sidebar-nav a:hover,.sidebar-nav a.active{background:rgba(201,168,76,0.15);color:var(--gold);}
+    .main{margin-left:var(--sidebar);flex:1;padding:32px;min-height:100vh;}
+    .main-header{margin-bottom:32px;}
+    .main-header h1{font-size:1.75rem;}
+    .stat-cards{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;margin-bottom:32px;}
+    .stat-card{background:var(--white);padding:24px;border-radius:12px;box-shadow:0 4px 15px rgba(0,0,0,0.06);}
+    .stat-card .icon{width:48px;height:48px;background:var(--gold-tint,#FDF6E3);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.25rem;margin-bottom:12px;}
+    .stat-card .value{font-size:2rem;font-weight:700;color:var(--navy);}
+    .stat-card .label{font-size:0.85rem;color:var(--muted);}
+    .panel{background:var(--white);border-radius:12px;padding:24px;box-shadow:0 4px 15px rgba(0,0,0,0.06);margin-bottom:24px;}
+    .panel-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:12px;}
+    .filter-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;}
+    .filter-tab{padding:8px 16px;border-radius:50px;border:1px solid #ddd;background:var(--white);cursor:pointer;font-size:0.85rem;transition:all 0.2s;}
+    .filter-tab.active,.filter-tab:hover{background:var(--navy);color:var(--white);border-color:var(--navy);}
+    .search-bar{width:100%;max-width:300px;padding:10px 16px;border:1px solid #ddd;border-radius:50px;font-size:0.9rem;margin-bottom:16px;}
+    .data-table{width:100%;border-collapse:collapse;font-size:0.85rem;}
+    .data-table th{background:var(--ivory);padding:12px;text-align:left;font-weight:600;}
+    .data-table td{padding:12px;border-bottom:1px solid #eee;}
+    .data-table tr:hover{background:#fafafa;}
+    .badge{display:inline-block;padding:4px 10px;border-radius:50px;font-size:0.75rem;font-weight:600;}
+    .badge-pass{background:#e8f5e9;color:var(--success);}
+    .badge-fail{background:#fdecea;color:var(--danger);}
+    .badge-incomplete{background:#f0f0f0;color:var(--muted);}
+    .badge-clean{background:#e8f5e9;color:var(--success);}
+    .badge-flagged{background:#fdecea;color:var(--danger);}
+    .btn-sm{padding:6px 14px;font-size:0.8rem;border-radius:50px;border:1px solid var(--navy);background:transparent;color:var(--navy);cursor:pointer;}
+    .btn-sm:hover{background:var(--navy);color:var(--white);}
+    .btn-export{background:var(--gold);color:var(--navy);border:none;padding:10px 20px;border-radius:50px;font-weight:600;cursor:pointer;}
+    .pagination{display:flex;gap:8px;margin-top:16px;justify-content:center;}
+    .page-btn{padding:8px 14px;border:1px solid #ddd;border-radius:8px;background:var(--white);cursor:pointer;}
+    .page-btn.active{background:var(--navy);color:var(--white);border-color:var(--navy);}
+    .page-section{display:none;}
+    .page-section.active{display:block;}
+    .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.6);display:none;align-items:center;justify-content:center;z-index:200;padding:24px;}
+    .modal-overlay.open{display:flex;}
+    .modal{background:var(--white);border-radius:12px;max-width:700px;width:100%;max-height:90vh;overflow-y:auto;position:relative;}
+    .modal-close{position:absolute;top:16px;right:16px;background:none;border:none;font-size:1.5rem;cursor:pointer;color:var(--muted);}
+    .modal-tabs{display:flex;border-bottom:2px solid #eee;}
+    .modal-tab{flex:1;padding:12px;background:none;border:none;cursor:pointer;font-weight:500;color:var(--muted);}
+    .modal-tab.active{color:var(--navy);border-bottom:2px solid var(--gold);margin-bottom:-2px;}
+    .modal-content{padding:24px;}
+    .modal-panel{display:none;}
+    .modal-panel.active{display:block;}
+    .profile-row{display:flex;padding:10px 0;border-bottom:1px solid #eee;}
+    .profile-row strong{min-width:180px;color:var(--navy);}
+    .action-btn{display:block;width:100%;padding:12px;margin-bottom:10px;border-radius:8px;border:none;font-weight:500;cursor:pointer;text-align:left;}
+    .action-shortlist{background:#e8f5e9;color:var(--success);}
+    .action-disqualify{background:#fdecea;color:var(--danger);}
+    .action-email{background:var(--ivory);color:var(--navy);}
+    .action-delete{background:var(--danger);color:var(--white);}
+    .settings-section{margin-bottom:32px;}
+    .settings-section h3{margin-bottom:12px;font-size:1.1rem;}
+    .settings-section p{color:var(--muted);font-size:0.9rem;margin-bottom:12px;}
+    .saved-key{font-size:0.85rem;color:var(--success);margin-top:8px;}
+    .sidebar-toggle{display:none;position:fixed;top:16px;left:16px;z-index:101;background:var(--navy);color:var(--white);border:none;padding:10px;border-radius:8px;cursor:pointer;}
+    @media(max-width:1024px){
+      .sidebar{width:70px;}
+      .sidebar-logo,.sidebar-nav a span{display:none;}
+      .sidebar-nav a{justify-content:center;padding:14px;}
+      .main{margin-left:70px;}
+      .stat-cards{grid-template-columns:repeat(2,1fr);}
+    }
+    @media(max-width:768px){
+      .sidebar{transform:translateX(-100%);}
+      .sidebar.open{transform:translateX(0);width:var(--sidebar);}
+      .sidebar.open .sidebar-logo,.sidebar.open .sidebar-nav a span{display:block;}
+      .main{margin-left:0;}
+      .sidebar-toggle{display:block;}
+      .stat-cards{grid-template-columns:1fr;}
+      .data-table{font-size:0.75rem;}
+    }
+  </style>
+</head>
+<body>
+
+  <!-- LOGIN -->
+  <div class="login-wrap" id="loginWrap">
+    <div class="login-card">
+      <svg width="40" height="40" viewBox="0 0 32 32" fill="none" style="display:block;margin:0 auto 12px;"><path d="M16 2C16 2 10 8 10 16C10 20 12 24 16 26C20 24 22 20 22 16C22 8 16 2 16 2Z" stroke="#C9A84C" stroke-width="2"/></svg>
+      <h1>Admin Login</h1>
+      <div class="login-error" id="loginError">Invalid username or password.</div>
+      <form id="adminLoginForm">
+        <div class="form-group"><label>Username</label><input type="text" id="adminUser" required></div>
+        <div class="form-group"><label>Password</label><input type="password" id="adminPass" required></div>
+        <button type="submit" class="btn btn-gold">Login</button>
+      </form>
+      <p style="text-align:center;margin-top:16px;"><a href="index.html" style="color:var(--muted);font-size:0.85rem;">← Back to Website</a></p>
+    </div>
+  </div>
+
+  <!-- DASHBOARD -->
+  <div class="dashboard" id="dashboard">
+    <button class="sidebar-toggle" id="sidebarToggle">☰</button>
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-logo">CMF Admin</div>
+      <nav class="sidebar-nav">
+        <a class="active" data-page="overview"><span>📊</span> <span>Dashboard</span></a>
+        <a data-page="applicants"><span>👥</span> <span>All Applicants</span></a>
+        <a data-page="passed"><span>✅</span> <span>Passed</span></a>
+        <a data-page="failed"><span>❌</span> <span>Failed</span></a>
+        <a data-page="flagged"><span>⛔</span> <span>Flagged Accounts</span></a>
+        <a data-page="settings"><span>⚙️</span> <span>Settings</span></a>
+        <a id="logoutAdmin"><span>🚪</span> <span>Logout</span></a>
+      </nav>
+    </aside>
+
+    <main class="main">
+      <!-- Overview -->
+      <div class="page-section active" id="page-overview">
+        <div class="main-header"><h1>Overview</h1></div>
+        <div class="stat-cards" id="statCards"></div>
+        <div class="panel">
+          <div class="panel-header"><h3>Recent Applications</h3><a href="#" class="btn-sm" data-goto="applicants">View All</a></div>
+          <table class="data-table" id="recentTable"><thead><tr><th>Name</th><th>Email</th><th>Course</th><th>Status</th></tr></thead><tbody></tbody></table>
+        </div>
+      </div>
+
+      <!-- Applicants -->
+      <div class="page-section" id="page-applicants">
+        <div class="main-header"><h1>All Applicants</h1></div>
+        <div class="panel" id="applicantsPanel">
+          <div class="filter-tabs" id="filterTabs">
+            <button class="filter-tab active" data-filter="all">All</button>
+            <button class="filter-tab" data-filter="awaiting_review">Awaiting Review</button>
+            <button class="filter-tab" data-filter="approved">Approved</button>
+            <button class="filter-tab" data-filter="failed">Failed</button>
+            <button class="filter-tab" data-filter="flagged">Flagged</button>
+            <button class="filter-tab" data-filter="incomplete">Incomplete</button>
+          </div>
+          <input type="text" class="search-bar" id="searchBar" placeholder="Search by name or email...">
+          <button class="btn-export" id="exportBtn">Export CSV</button>
+          <table class="data-table" style="margin-top:16px;">
+            <thead><tr><th>#</th><th>Full Name</th><th>Email</th><th>Course</th><th>Level</th><th>University</th><th>Test 1</th><th>Test 2</th><th>Test 3</th><th>Overall</th><th>Flag</th><th>Payment</th><th>Actions</th></tr></thead>
+            <tbody id="applicantsBody"></tbody>
+          </table>
+          <div class="pagination" id="pagination"></div>
+        </div>
+      </div>
+
+      <div class="page-section" id="page-passed"><div class="main-header"><h1>Passed Applicants</h1></div><div class="panel" id="passedPanel"></div></div>
+      <div class="page-section" id="page-failed"><div class="main-header"><h1>Failed Applicants</h1></div><div class="panel" id="failedPanel"></div></div>
+      <div class="page-section" id="page-flagged"><div class="main-header"><h1>Flagged Accounts</h1></div><div class="panel" id="flaggedPanel"></div></div>
+
+      <!-- Settings -->
+      <div class="page-section" id="page-settings">
+        <div class="main-header"><h1>Settings</h1></div>
+        <div class="panel settings-section">
+          <h3>Anthropic API Key (Claude - Question Generation)</h3>
+          <p><strong>For Vercel:</strong> Add your Anthropic key as <strong>ANTHROPIC_API_KEY</strong> in Vercel Project Settings &gt; Environment Variables. This keeps question generation server-side.</p>
+          <p style="font-size:0.85rem;color:var(--muted);margin-bottom:12px;">Local preview fallback: paste a key below to validate it and store it in this browser while testing on http://localhost:8000.</p>
+          <div class="form-group"><input type="password" id="apiKeyInput" placeholder="sk-ant-api03-..."></div>
+          <button class="btn btn-gold" id="saveApiKey" style="width:auto;">Save API Key</button>
+          <div class="saved-key" id="savedKeyDisplay"></div>
+        </div>
+        <div class="panel settings-section">
+          <h3>Paystack Public Key (Acceptance Fee Payments)</h3>
+          <p>Paste your Paystack <strong>public key</strong> (starts with pk_test_ or pk_live_) to enable the ₦20,000 acceptance fee payment for approved scholars.</p>
+          <p style="font-size:0.85rem;color:var(--muted);margin-bottom:12px;">Get this from <strong>dashboard.paystack.com</strong> → Settings → API Keys & Webhooks.</p>
+          <div class="form-group"><input type="password" id="paystackKeyInput" placeholder="pk_test_... or pk_live_..."></div>
+          <button class="btn btn-gold" id="savePaystackKey" style="width:auto;">Save Paystack Key</button>
+          <div class="saved-key" id="savedPaystackDisplay"></div>
+        </div>
+        <div class="panel settings-section">
+          <h3>Admin Password</h3>
+          <div class="form-group"><label>Current Password</label><input type="password" id="currentPass"></div>
+          <div class="form-group"><label>New Password</label><input type="password" id="newPass"></div>
+          <div class="form-group"><label>Confirm New Password</label><input type="password" id="confirmPass"></div>
+          <button class="btn btn-gold" id="updatePass" style="width:auto;">Update Password</button>
+          <p id="passMsg" style="margin-top:8px;font-size:0.85rem;"></p>
+        </div>
+        <div class="panel settings-section">
+          <h3>Application Cycle</h3>
+          <div class="form-group"><label>Current Cycle</label><input type="text" id="cycleInput" value="2025/2026"></div>
+          <div class="form-group"><label>Application Deadline</label><input type="date" id="deadlineInput" value="2025-03-31"></div>
+          <button class="btn btn-gold" id="saveSettings" style="width:auto;">Save Settings</button>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- MODAL -->
+  <div class="modal-overlay" id="detailModal">
+    <div class="modal">
+      <button class="modal-close" id="modalClose">×</button>
+      <div class="modal-tabs">
+        <button class="modal-tab active" data-tab="profile">Profile</button>
+        <button class="modal-tab" data-tab="tests">Test Results</button>
+        <button class="modal-tab" data-tab="flags">Flag History</button>
+        <button class="modal-tab" data-tab="actions">Actions</button>
+      </div>
+      <div class="modal-content">
+        <div class="modal-panel active" id="tab-profile"></div>
+        <div class="modal-panel" id="tab-tests"></div>
+        <div class="modal-panel" id="tab-flags"></div>
+        <div class="modal-panel" id="tab-actions"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const DEFAULT_ADMIN_PASS = 'CMF@Admin2025';
+    let adminPassword = localStorage.getItem('cmf_admin_password') || DEFAULT_ADMIN_PASS;
+    let currentFilter = 'all', currentPage = 1, perPage = 10, searchQuery = '', selectedApplicant = null;
+
+    function getApplicants() {
+      return JSON.parse(localStorage.getItem('cmf_applicants') || '[]');
+    }
+    function saveApplicants(arr) {
+      localStorage.setItem('cmf_applicants', JSON.stringify(arr));
+    }
+
+    function loadDummyData() {
+      if (getApplicants().length > 0) return;
+      const dummy = [
+        { name:'Chidera Okafor', email:'chidera@gmail.com', course:'Civil Engineering', level:'200L', university:'University of Lagos', test1Score:25, test2Score:20, test3Score:16, test1Pass:true, test2Pass:true, test3Pass:true, isFlagged:false, overallStatus:'awaiting_review' },
+        { name:'Fatima Aliyu', email:'fatima@yahoo.com', course:'Medicine & Surgery', level:'300L', university:'ABU Zaria', test1Score:14, test2Score:18, test3Score:13, test1Pass:false, test2Pass:true, test3Pass:true, isFlagged:false, overallStatus:'failed' },
+        { name:'Adaeze Nnaji', email:'adaeze@gmail.com', course:'Computer Science', level:'400L', university:'Covenant University', test1Score:28, test2Score:22, test3Score:18, test1Pass:true, test2Pass:true, test3Pass:true, isFlagged:true, flagReason:'Tab switch detected', flagTime:'2025-03-10T11:42:00', overallStatus:'flagged', flags:[{reason:'Tab switch detected',timestamp:'2025-03-10T11:42:00'}] },
+        { name:'Emmanuel Terfa', email:'emmanuel@gmail.com', course:'Law', level:'300L', university:'University of Abuja', test1Score:20, test2Score:16, test3Score:17, test1Pass:true, test2Pass:true, test3Pass:true, isFlagged:false, overallStatus:'awaiting_review' }
+      ];
+      saveApplicants(dummy);
+    }
+
+    function getStatus(a) {
+      if (a.isFlagged) return 'flagged';
+      if (a.acceptanceFeePaid) return 'enrolled';
+      if (a.adminApproved) return 'approved';
+      if (a.overallStatus === 'awaiting_review') return 'awaiting_review';
+      return a.overallStatus || 'incomplete';
+    }
+
+    function statusBadge(status) {
+      const map = {
+        passed: 'badge-pass', failed: 'badge-fail', incomplete: 'badge-incomplete',
+        flagged: 'badge-fail', awaiting_review: 'badge-pass', approved: 'badge-pass', enrolled: 'badge-pass'
+      };
+      const labels = {
+        awaiting_review: 'AWAITING REVIEW', approved: 'APPROVED', enrolled: 'FEE PAID',
+        passed: 'PASSED', failed: 'FAILED', incomplete: 'INCOMPLETE', flagged: 'FLAGGED'
+      };
+      return `<span class="badge ${map[status] || 'badge-incomplete'}">${labels[status] || status.toUpperCase()}</span>`;
+    }
+
+    function renderStats() {
+      const apps = getApplicants();
+      const passed = apps.filter(a => getStatus(a) === 'awaiting_review' || (a.test1Pass && a.test2Pass && a.test3Pass && !a.isFlagged)).length;
+      const failed = apps.filter(a => getStatus(a) === 'failed').length;
+      const flagged = apps.filter(a => a.isFlagged).length;
+      document.getElementById('statCards').innerHTML = `
+        <div class="stat-card"><div class="icon">👥</div><div class="value">${apps.length}</div><div class="label">Total Applicants</div></div>
+        <div class="stat-card"><div class="icon">✅</div><div class="value">${passed}</div><div class="label">Passed All Tests</div></div>
+        <div class="stat-card"><div class="icon">❌</div><div class="value">${failed}</div><div class="label">Failed</div></div>
+        <div class="stat-card"><div class="icon">⛔</div><div class="value">${flagged}</div><div class="label">Flagged Accounts</div></div>
+      `;
+      const recent = apps.slice(-5).reverse();
+      document.querySelector('#recentTable tbody').innerHTML = recent.map(a =>
+        `<tr><td>${a.name}</td><td>${a.email}</td><td>${a.course||'—'}</td><td>${statusBadge(getStatus(a))}</td></tr>`
+      ).join('') || '<tr><td colspan="4">No applications yet</td></tr>';
+    }
+
+    function filterApplicants() {
+      let apps = getApplicants();
+      if (currentFilter === 'passed') {
+        apps = apps.filter(a => a.test1Pass && a.test2Pass && a.test3Pass && !a.isFlagged);
+      } else if (currentFilter !== 'all') {
+        apps = apps.filter(a => getStatus(a) === currentFilter);
+      }
+      if (searchQuery) {
+        const q = searchQuery.toLowerCase();
+        apps = apps.filter(a => (a.name||'').toLowerCase().includes(q) || (a.email||'').toLowerCase().includes(q));
+      }
+      return apps;
+    }
+
+    function renderApplicantsTable(targetId = 'applicantsBody') {
+      const apps = filterApplicants();
+      const start = (currentPage - 1) * perPage;
+      const page = apps.slice(start, start + perPage);
+      const tbody = document.getElementById(targetId);
+      if (!tbody) return;
+      tbody.innerHTML = page.map((a, i) => {
+        const t1 = a.test1Score != null ? `${a.test1Score}/30` : '—';
+        const t2 = a.test2Score != null ? `${a.test2Score}/25` : '—';
+        const t3 = a.test3Score != null ? `${a.test3Score}/20` : '—';
+        return `<tr>
+          <td>${start + i + 1}</td><td>${a.name}</td><td>${a.email}</td><td>${a.course||'—'}</td>
+          <td>${a.level||'—'}</td><td>${a.university||'—'}</td>
+          <td>${t1}</td><td>${t2}</td><td>${t3}</td>
+          <td>${statusBadge(getStatus(a))}</td>
+          <td><span class="badge ${a.isFlagged?'badge-flagged':'badge-clean'}">${a.isFlagged?'FLAGGED':'CLEAN'}</span></td>
+          <td>${a.acceptanceFeePaid ? '<span class="badge badge-pass">PAID</span>' : a.adminApproved ? '<span class="badge" style="background:#FDF6E3;color:#0D1F3C;">PENDING</span>' : '—'}</td>
+          <td>
+            ${(a.test1Pass && a.test2Pass && a.test3Pass && !a.isFlagged && !a.adminApproved) ? `<button class="btn-sm" style="background:var(--success);color:white;border:none;margin-bottom:4px;" onclick="approveApplicant('${a.email}')">Approve</button> ` : ''}
+            <button class="btn-sm" onclick="viewApplicant('${a.email}')">View</button>
+          </td>
+        </tr>`;
+      }).join('') || '<tr><td colspan="13">No applicants found</td></tr>';
+
+      const totalPages = Math.ceil(apps.length / perPage) || 1;
+      const pag = document.getElementById('pagination');
+      if (pag) {
+        pag.innerHTML = Array.from({length: totalPages}, (_, i) =>
+          `<button class="page-btn ${i+1===currentPage?'active':''}" onclick="goPage(${i+1})">${i+1}</button>`
+        ).join('');
+      }
+    }
+
+    window.goPage = n => { currentPage = n; renderApplicantsTable(); };
+    window.approveApplicant = email => {
+      if (!confirm(`Approve ${email} and release acceptance fee payment portal?`)) return;
+      let apps = getApplicants();
+      const idx = apps.findIndex(a => a.email === email);
+      if (idx < 0) return;
+      apps[idx].adminApproved = true;
+      apps[idx].overallStatus = 'approved';
+      apps[idx].approvedAt = new Date().toISOString();
+      saveApplicants(apps);
+      renderStats();
+      renderApplicantsTable();
+      alert(`Applicant approved. They will now see the ₦20,000 acceptance fee payment option when they log in.`);
+    };
+
+    window.viewApplicant = email => {
+      selectedApplicant = getApplicants().find(a => a.email === email);
+      if (!selectedApplicant) return;
+      openModal();
+    };
+
+    function openModal() {
+      const a = selectedApplicant;
+      const app = a.application || {};
+      document.getElementById('tab-profile').innerHTML = Object.entries({
+        'Full Name': a.name, 'Email': a.email, 'Phone': a.phone||app.phone||'—',
+        'University': a.university||app.university||'—', 'Course': a.course||app.course||'—',
+        'Level': a.level||app.level||'—', 'CGPA': a.cgpa||app.cgpa||'—',
+        'Scholarship': a.scholarship||app.scholarship||'—', 'State': app.state||'—',
+        'Income': app.income||'—', 'First Gen': app.firstGen||'—'
+      }).map(([k,v]) => `<div class="profile-row"><strong>${k}</strong><span>${v}</span></div>`).join('');
+
+      const tests = [
+        { n:1, total:30, score:a.test1Score, pass:a.test1Pass },
+        { n:2, total:25, score:a.test2Score, pass:a.test2Pass },
+        { n:3, total:20, score:a.test3Score, pass:a.test3Pass }
+      ];
+      document.getElementById('tab-tests').innerHTML = tests.map(t => {
+        const s = t.score != null ? t.score : 0;
+        const pct = t.total ? Math.round((s/t.total)*100) : 0;
+        return `<div style="margin-bottom:16px;"><strong>Test ${t.n}:</strong> ${s} / ${t.total} — ${t.pass?'PASS':'FAIL'} — ${pct}%
+          <div style="height:8px;background:#eee;border-radius:4px;margin-top:6px;"><div style="height:100%;width:${pct}%;background:var(--gold);border-radius:4px;"></div></div></div>`;
+      }).join('') || '<p>No test results yet.</p>';
+
+      if (a.isFlagged) {
+        const flags = a.flags || [{ reason: a.flagReason, timestamp: a.flagTime }];
+        document.getElementById('tab-flags').innerHTML = `<table class="data-table"><thead><tr><th>#</th><th>Reason</th><th>Time</th></tr></thead><tbody>${
+          flags.map((f,i) => `<tr><td>${i+1}</td><td>${f.reason}</td><td>${new Date(f.timestamp).toLocaleString()}</td></tr>`).join('')
+        }</tbody></table>`;
+      } else {
+        document.getElementById('tab-flags').innerHTML = '<p>No malpractice flags on this account.</p>';
+      }
+
+      const canApprove = a.test1Pass && a.test2Pass && a.test3Pass && !a.isFlagged && !a.adminApproved;
+      document.getElementById('tab-actions').innerHTML = `
+        ${canApprove ? `<button class="action-btn action-shortlist" onclick="approveApplicant('${a.email}');document.getElementById('detailModal').classList.remove('open');">✅ Approve & Release Payment (₦20,000)</button>` : ''}
+        ${a.adminApproved && !a.acceptanceFeePaid ? `<p style="color:var(--success);margin-bottom:12px;">✓ Approved — awaiting acceptance fee payment</p>` : ''}
+        ${a.acceptanceFeePaid ? `<p style="color:var(--success);margin-bottom:12px;">✓ Acceptance fee paid — Ref: ${a.paymentRef || '—'}</p>` : ''}
+        <button class="action-btn action-shortlist" onclick="doAction('shortlisted')">📋 Mark as Shortlisted</button>
+        <button class="action-btn action-disqualify" onclick="doAction('disqualified')">❌ Disqualify Manually</button>
+        <button class="action-btn action-email" onclick="doAction('email')">📧 Send Decision Email</button>
+        <button class="action-btn action-delete" onclick="doAction('delete')">🗑 Delete Application</button>
+      `;
+
+      document.getElementById('detailModal').classList.add('open');
+    }
+
+    window.doAction = action => {
+      const email = selectedApplicant.email;
+      let apps = getApplicants();
+      const idx = apps.findIndex(a => a.email === email);
+      if (idx < 0) return;
+      if (action === 'delete') {
+        if (!confirm('Are you sure you want to delete this application?')) return;
+        apps.splice(idx, 1);
+      } else if (action === 'email') {
+        alert(`Email sent to ${email}`);
+        return;
+      } else {
+        apps[idx].status = action;
+        if (action === 'disqualified') apps[idx].overallStatus = 'failed';
+      }
+      saveApplicants(apps);
+      document.getElementById('detailModal').classList.remove('open');
+      renderStats();
+      renderApplicantsTable();
+    };
+
+    function showDashboard() {
+      document.getElementById('loginWrap').style.display = 'none';
+      document.getElementById('dashboard').classList.add('active');
+      loadDummyData();
+      renderStats();
+      renderApplicantsTable();
+      const key = localStorage.getItem('cmf_api_key');
+      document.getElementById('savedKeyDisplay').textContent = key
+        ? 'Local fallback key saved: sk-ant-••••••••••••' + key.slice(-4)
+        : 'Vercel will use ANTHROPIC_API_KEY from Environment Variables.';
+      const pk = localStorage.getItem('cmf_paystack_public_key');
+      if (pk) document.getElementById('savedPaystackDisplay').textContent = 'Saved Key: ' + pk.slice(0, 8) + '••••••••' + pk.slice(-4);
+    }
+
+    if (sessionStorage.getItem('adminAuth') === 'true') showDashboard();
+
+    document.getElementById('adminLoginForm').addEventListener('submit', e => {
+      e.preventDefault();
+      const user = document.getElementById('adminUser').value;
+      const pass = document.getElementById('adminPass').value;
+      if (user === 'admin' && pass === adminPassword) {
+        sessionStorage.setItem('adminAuth', 'true');
+        document.getElementById('loginError').classList.remove('show');
+        showDashboard();
+      } else {
+        document.getElementById('loginError').classList.add('show');
+      }
+    });
+
+    document.getElementById('logoutAdmin').addEventListener('click', () => {
+      sessionStorage.removeItem('adminAuth');
+      location.reload();
+    });
+
+    document.querySelectorAll('.sidebar-nav a[data-page]').forEach(link => {
+      link.addEventListener('click', () => {
+        const page = link.dataset.page;
+        document.querySelectorAll('.sidebar-nav a').forEach(l => l.classList.remove('active'));
+        link.classList.add('active');
+        document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
+        document.getElementById('page-' + page).classList.add('active');
+        if (page === 'passed') { currentFilter = 'passed'; currentPage = 1; renderFilteredPage('passedPanel'); }
+        if (page === 'failed') { currentFilter = 'failed'; currentPage = 1; renderFilteredPage('failedPanel'); }
+        if (page === 'flagged') { currentFilter = 'flagged'; currentPage = 1; renderFilteredPage('flaggedPanel'); }
+        if (page === 'applicants') { currentFilter = 'all'; renderApplicantsTable(); }
+      });
+    });
+
+    function renderFilteredPage(panelId) {
+      const apps = filterApplicants();
+      document.getElementById(panelId).innerHTML = `<table class="data-table"><thead><tr><th>Name</th><th>Email</th><th>Course</th><th>Status</th><th>Actions</th></tr></thead><tbody>${
+        apps.map(a => `<tr><td>${a.name}</td><td>${a.email}</td><td>${a.course||'—'}</td><td>${statusBadge(getStatus(a))}</td><td><button class="btn-sm" onclick="viewApplicant('${a.email}')">View</button></td></tr>`).join('')
+      }</tbody></table>` || '<p>No applicants in this category.</p>';
+    }
+
+    document.querySelectorAll('.filter-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        currentFilter = tab.dataset.filter;
+        currentPage = 1;
+        renderApplicantsTable();
+      });
+    });
+
+    document.getElementById('searchBar').addEventListener('input', e => {
+      searchQuery = e.target.value;
+      currentPage = 1;
+      renderApplicantsTable();
+    });
+
+    document.getElementById('exportBtn').addEventListener('click', () => {
+      const apps = filterApplicants();
+      const headers = ['Name','Email','Course','Level','University','Test1','Test2','Test3','Status','Flagged','Approved','FeePaid','PaymentRef'];
+      const rows = apps.map(a => [a.name,a.email,a.course,a.level,a.university,a.test1Score,a.test2Score,a.test3Score,getStatus(a),a.isFlagged?'Yes':'No',a.adminApproved?'Yes':'No',a.acceptanceFeePaid?'Yes':'No',a.paymentRef||'']);
+      const csv = [headers, ...rows].map(r => r.map(c => `"${c||''}"`).join(',')).join('\n');
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'cmf_applicants.csv';
+      a.click();
+    });
+
+    document.querySelectorAll('.modal-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.modal-tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.modal-panel').forEach(p => p.classList.remove('active'));
+        tab.classList.add('active');
+        document.getElementById('tab-' + tab.dataset.tab).classList.add('active');
+      });
+    });
+
+    document.getElementById('modalClose').addEventListener('click', () => {
+      document.getElementById('detailModal').classList.remove('open');
+    });
+    document.getElementById('detailModal').addEventListener('click', e => {
+      if (e.target.id === 'detailModal') document.getElementById('detailModal').classList.remove('open');
+    });
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') document.getElementById('detailModal').classList.remove('open');
+    });
+
+    document.getElementById('saveApiKey').addEventListener('click', async () => {
+      const key = document.getElementById('apiKeyInput').value.trim();
+      const saveBtn = document.getElementById('saveApiKey');
+      const display = document.getElementById('savedKeyDisplay');
+      if (!key) return;
+
+      saveBtn.disabled = true;
+      saveBtn.textContent = 'Validating key...';
+      display.textContent = 'Validating key...';
+
+      try {
+        const res = await fetch('/api/anthropic', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ apiKey: key, prompt: 'Reply with exactly OK', model: 'claude-3-5-sonnet-20241022', max_tokens: 3 })
+        });
+        const body = await res.json().catch(() => null);
+        if (!res.ok || body?.error) {
+          const msg = body?.error?.message || `Anthropic rejected the key (HTTP ${res.status})`;
+          throw new Error(msg);
+        }
+
+        localStorage.setItem('cmf_api_key', key);
+        display.textContent = 'Local fallback key saved: sk-ant-••••••••••••' + key.slice(-4);
+        document.getElementById('apiKeyInput').value = '';
+        alert('Anthropic API key validated. For Vercel, also set it as ANTHROPIC_API_KEY in Environment Variables.');
+      } catch (err) {
+        const fileHint = location.protocol === 'file:' ? ' Open the site through http://localhost:8000/admin.html before validating locally.' : '';
+        display.textContent = 'Validation failed: ' + (err.message || 'Unknown error') + fileHint;
+        alert('Could not validate the Anthropic key. Please check that it is copied correctly and still active.');
+      } finally {
+        saveBtn.disabled = false;
+        saveBtn.textContent = 'Save API Key';
+      }
+    });
+
+    document.getElementById('savePaystackKey').addEventListener('click', () => {
+      const key = document.getElementById('paystackKeyInput').value.trim();
+      if (key) {
+        localStorage.setItem('cmf_paystack_public_key', key);
+        document.getElementById('savedPaystackDisplay').textContent = 'Saved Key: ' + key.slice(0, 8) + '••••••••' + key.slice(-4);
+        document.getElementById('paystackKeyInput').value = '';
+        alert('Paystack public key saved. Approved scholars can now pay the acceptance fee.');
+      }
+    });
+
+    document.getElementById('updatePass').addEventListener('click', () => {
+      const cur = document.getElementById('currentPass').value;
+      const nw = document.getElementById('newPass').value;
+      const conf = document.getElementById('confirmPass').value;
+      const msg = document.getElementById('passMsg');
+      if (cur !== adminPassword) { msg.style.color = 'var(--danger)'; msg.textContent = 'Current password is incorrect.'; return; }
+      if (nw.length < 8) { msg.style.color = 'var(--danger)'; msg.textContent = 'New password must be at least 8 characters.'; return; }
+      if (nw !== conf) { msg.style.color = 'var(--danger)'; msg.textContent = 'Passwords do not match.'; return; }
+      adminPassword = nw;
+      localStorage.setItem('cmf_admin_password', nw);
+      msg.style.color = 'var(--success)'; msg.textContent = 'Password updated successfully.';
+    });
+
+    document.getElementById('saveSettings').addEventListener('click', () => {
+      localStorage.setItem('cmf_cycle', document.getElementById('cycleInput').value);
+      localStorage.setItem('cmf_deadline', document.getElementById('deadlineInput').value);
+      alert('Settings saved.');
+    });
+
+    document.getElementById('sidebarToggle').addEventListener('click', () => {
+      document.getElementById('sidebar').classList.toggle('open');
+    });
+
+    document.querySelectorAll('[data-goto]').forEach(el => {
+      el.addEventListener('click', e => {
+        e.preventDefault();
+        document.querySelector(`.sidebar-nav a[data-page="${el.dataset.goto}"]`).click();
+      });
+    });
+  </script>
+</body>
+</html>

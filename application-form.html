@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/png" href="favicon.png">
+  <link rel="apple-touch-icon" href="favicon.png">
+  <title>Scholarship Application — The Curious Minds Foundation</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
+  <style>
+    :root{--navy:#0D1F3C;--gold:#C9A84C;--ivory:#F8F6F1;--text-dark:#1A1A2E;--muted:#6B7280;--white:#FFFFFF;--danger:#C0392B;--success:#2D7A4F;}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:'Inter',sans-serif;background:var(--ivory);color:var(--text-dark);line-height:1.6;}
+    h2{font-family:'Playfair Display',serif;color:var(--navy);}
+    .header{background:var(--navy);color:var(--white);padding:16px 24px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;}
+    .header-logo{display:flex;align-items:center;gap:10px;font-family:'Playfair Display',serif;font-weight:700;font-size:1rem;}
+    .header-right{display:flex;align-items:center;gap:16px;font-size:0.9rem;}
+    .header-right a{color:var(--gold);cursor:pointer;}
+    .container{max-width:800px;margin:0 auto;padding:32px 24px;}
+    .progress{display:flex;gap:8px;margin-bottom:32px;flex-wrap:wrap;}
+    .progress-step{flex:1;min-width:100px;padding:10px 12px;background:#e8e6e1;border-radius:50px;text-align:center;font-size:0.75rem;font-weight:500;color:var(--muted);transition:all 0.3s;}
+    .progress-step.active{background:var(--gold);color:var(--navy);}
+    .progress-step.done{background:var(--navy);color:var(--white);}
+    .form-section{display:none;background:var(--white);padding:32px;border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,0.06);}
+    .form-section.active{display:block;}
+    .form-section h2{margin-bottom:8px;font-size:1.5rem;}
+    .section-desc{color:var(--muted);margin-bottom:24px;font-size:0.9rem;}
+    .form-group{margin-bottom:18px;}
+    .form-group label{display:block;margin-bottom:6px;font-weight:500;font-size:0.9rem;}
+    .form-group input,.form-group select,.form-group textarea{width:100%;padding:12px 16px;border:1px solid #ddd;border-radius:8px;font-family:'Inter',sans-serif;font-size:0.95rem;}
+    .form-group input:focus,.form-group select:focus,.form-group textarea:focus{outline:none;border-color:var(--gold);}
+    .form-group input[readonly]{background:#f0f0f0;color:var(--muted);}
+    .form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+    .error{color:var(--danger);font-size:0.8rem;margin-top:4px;}
+    .radio-group{display:flex;gap:20px;flex-wrap:wrap;}
+    .radio-group label{display:flex;align-items:center;gap:6px;font-weight:400;cursor:pointer;}
+    .scholarship-cards{display:grid;gap:12px;}
+    .scholarship-radio{display:flex;align-items:flex-start;gap:12px;padding:16px;border:2px solid #eee;border-radius:8px;cursor:pointer;transition:all 0.3s;}
+    .scholarship-radio:has(input:checked){border-color:var(--gold);background:var(--ivory);}
+    .scholarship-radio input{margin-top:4px;}
+    .scholarship-radio strong{display:block;color:var(--navy);}
+    .scholarship-radio span{font-size:0.85rem;color:var(--muted);}
+    .conditional{display:none;margin-top:12px;padding:16px;background:var(--ivory);border-radius:8px;}
+    .conditional.show{display:block;}
+    .word-counter{font-size:0.8rem;color:var(--muted);margin-top:4px;}
+    .word-counter.valid{color:var(--success);}
+    .upload-item{display:flex;align-items:center;gap:12px;padding:12px;border:1px dashed #ccc;border-radius:8px;margin-bottom:10px;}
+    .upload-item input[type=file]{flex:1;font-size:0.85rem;}
+    .upload-status{font-size:0.85rem;color:var(--success);display:none;}
+    .upload-status.show{display:inline;}
+    .nav-buttons{display:flex;justify-content:space-between;margin-top:32px;gap:12px;}
+    .btn{padding:12px 28px;border-radius:50px;font-weight:500;font-size:0.95rem;cursor:pointer;border:2px solid transparent;min-height:44px;}
+    .btn-gold{background:var(--gold);color:var(--navy);border-color:var(--gold);}
+    .btn-gold:hover{background:#b8963f;}
+    .btn-ghost{background:transparent;color:var(--navy);border-color:var(--navy);}
+    .btn-ghost:hover{background:var(--navy);color:var(--white);}
+    .review-item{padding:12px 0;border-bottom:1px solid #eee;}
+    .review-item strong{color:var(--navy);display:inline-block;min-width:180px;}
+    .checkbox-group{display:flex;align-items:flex-start;gap:10px;margin:20px 0;}
+    .checkbox-group input{margin-top:4px;}
+    @media(max-width:768px){.form-row{grid-template-columns:1fr;}.progress-step{min-width:80px;font-size:0.65rem;}}
+  </style>
+</head>
+<body>
+  <header class="header">
+    <div class="header-logo">
+      <svg width="28" height="28" viewBox="0 0 32 32" fill="none"><path d="M16 2C16 2 10 8 10 16C10 20 12 24 16 26C20 24 22 20 22 16C22 8 16 2 16 2Z" stroke="#C9A84C" stroke-width="2"/><ellipse cx="16" cy="14" rx="3" ry="5" fill="#C9A84C" opacity="0.6"/></svg>
+      The Curious Minds Foundation
+    </div>
+    <div class="header-right">
+      <a href="results.html" style="color:var(--gold);">My Results</a>
+      <span>Welcome, <strong id="userName"></strong></span>
+      <a id="logoutBtn">Logout</a>
+    </div>
+  </header>
+
+  <div class="container">
+    <div class="progress" id="progressBar">
+      <div class="progress-step active" data-step="0">Personal Info</div>
+      <div class="progress-step" data-step="1">Academic Info</div>
+      <div class="progress-step" data-step="2">Scholarship Choice</div>
+      <div class="progress-step" data-step="3">Financial Info</div>
+      <div class="progress-step" data-step="4">Personal Statement</div>
+    </div>
+
+    <!-- Section A -->
+    <div class="form-section active" id="section0">
+      <h2>Personal Information</h2>
+      <p class="section-desc">Tell us about yourself. Fields marked with your registration details are pre-filled.</p>
+      <div class="form-group"><label>Full Name</label><input type="text" id="fullName" readonly></div>
+      <div class="form-group"><label>Email Address</label><input type="email" id="email" readonly></div>
+      <div class="form-row">
+        <div class="form-group"><label>Date of Birth *</label><input type="date" id="dob" required><div class="error" id="errDob"></div></div>
+        <div class="form-group"><label>Gender</label>
+          <select id="gender"><option value="">Select</option><option>Male</option><option>Female</option><option>Prefer not to say</option></select>
+        </div>
+      </div>
+      <div class="form-group"><label>State of Origin *</label>
+        <select id="state" required><option value="">Select state</option></select>
+        <div class="error" id="errState"></div>
+      </div>
+      <div class="form-group"><label>Phone Number</label><input type="tel" id="phone"></div>
+      <div class="form-group"><label>Permanent Home Address *</label><textarea id="address" rows="3" required></textarea><div class="error" id="errAddress"></div></div>
+      <div class="form-row">
+        <div class="form-group"><label>Next of Kin Full Name *</label><input type="text" id="nokName" required><div class="error" id="errNokName"></div></div>
+        <div class="form-group"><label>Next of Kin Relationship *</label><input type="text" id="nokRel" required><div class="error" id="errNokRel"></div></div>
+      </div>
+      <div class="form-group"><label>Next of Kin Phone Number *</label><input type="tel" id="nokPhone" required><div class="error" id="errNokPhone"></div></div>
+    </div>
+
+    <!-- Section B -->
+    <div class="form-section" id="section1">
+      <h2>Academic Information</h2>
+      <p class="section-desc">Provide details about your current academic standing.</p>
+      <div class="form-group"><label>University Name *</label><input type="text" id="university" required><div class="error" id="errUniversity"></div></div>
+      <div class="form-group"><label>Course of Study *</label>
+        <select id="course" required>
+          <option value="">Select course</option>
+          <option>Civil Engineering</option><option>Mechanical Engineering</option><option>Electrical Engineering</option>
+          <option>Chemical Engineering</option><option>Petroleum Engineering</option><option>Computer Engineering</option>
+          <option>Medicine & Surgery</option><option>Pharmacy</option><option>Nursing</option><option>Medical Laboratory Science</option>
+          <option>Law</option><option>Accounting</option><option>Economics</option><option>Business Administration</option>
+          <option>Computer Science</option><option>Information Technology</option><option>Cybersecurity</option>
+          <option>Architecture</option><option>Estate Management</option><option>Quantity Surveying</option>
+          <option>Agricultural Science</option><option>Veterinary Medicine</option>
+          <option>Mass Communication</option><option>English & Literary Studies</option>
+          <option>Education (Mathematics)</option><option>Education (English)</option>
+          <option>Microbiology</option><option>Biochemistry</option><option>Physics</option><option>Chemistry</option>
+          <option>Mathematics</option><option>Statistics</option><option>Political Science</option><option>Sociology</option>
+          <option>Psychology</option><option>Fine & Applied Arts</option><option>Public Health</option><option>Dentistry</option>
+          <option>Food Science & Technology</option><option>Industrial Chemistry</option><option>Banking & Finance</option>
+          <option>Marketing</option><option>Human Resource Management</option><option>Geology</option><option>Surveying & Geoinformatics</option>
+          <option>Others</option>
+        </select>
+        <div class="error" id="errCourse"></div>
+      </div>
+      <div class="conditional" id="otherCourseFields">
+        <div class="form-group">
+          <label>Specify Your Course of Study *</label>
+          <input type="text" id="otherCourse" placeholder="e.g. Fisheries & Aquaculture, Theatre Arts, Geophysics">
+          <p style="font-size:0.82rem;color:var(--muted);margin-top:8px;">Enter your exact programme name as it appears on your admission letter. Test 1 (Discipline-Based Exam) will be generated specifically for this course.</p>
+          <div class="error" id="errOtherCourse"></div>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Current Level *</label>
+          <select id="level" required><option value="">Select</option><option>100L</option><option>200L</option><option>300L</option><option>400L</option><option>500L</option><option>600L</option></select>
+          <div class="error" id="errLevel"></div>
+        </div>
+        <div class="form-group"><label>Current CGPA *</label><input type="number" id="cgpa" min="0" max="5" step="0.01" required><div class="error" id="errCgpa"></div></div>
+      </div>
+      <div class="form-group"><label>Matriculation / Student Number *</label><input type="text" id="matric" required><div class="error" id="errMatric"></div></div>
+      <div class="form-group"><label>Name of Academic Supervisor or HOD</label><input type="text" id="supervisor"></div>
+      <div class="form-group"><label>Have you previously failed or repeated a level? *</label>
+        <div class="radio-group"><label><input type="radio" name="repeated" value="Yes"> Yes</label><label><input type="radio" name="repeated" value="No"> No</label></div>
+        <div class="error" id="errRepeated"></div>
+      </div>
+    </div>
+
+    <!-- Section C -->
+    <div class="form-section" id="section2">
+      <h2>Scholarship Selection</h2>
+      <p class="section-desc">Choose the scholarship that best matches your profile and goals.</p>
+      <div class="form-group"><label>Which scholarship are you applying for? *</label>
+        <div class="scholarship-cards">
+          <label class="scholarship-radio"><input type="radio" name="scholarship" value="Founders Merit"><div><strong>The Founders Merit Scholarship</strong><span>For top academic performers across all disciplines</span></div></label>
+          <label class="scholarship-radio"><input type="radio" name="scholarship" value="Equity & Access"><div><strong>The Equity & Access Grant</strong><span>For first-generation students with demonstrated financial need</span></div></label>
+          <label class="scholarship-radio"><input type="radio" name="scholarship" value="Women in STEM"><div><strong>The Women in STEM Award</strong><span>For female students in Science, Technology, Engineering, or Mathematics</span></div></label>
+          <label class="scholarship-radio"><input type="radio" name="scholarship" value="Community Leaders"><div><strong>The Community Leaders Bursary</strong><span>For students with demonstrated community service and leadership</span></div></label>
+        </div>
+        <div class="error" id="errScholarship"></div>
+      </div>
+      <div class="form-group"><label>Why this scholarship specifically? (min 50 words) *</label><textarea id="whyScholarship" rows="4" required></textarea><div class="word-counter" id="whyCounter">Word count: 0 / 50 minimum</div><div class="error" id="errWhy"></div></div>
+      <div class="form-group"><label>Have you received any scholarship in the past 3 years? *</label>
+        <div class="radio-group"><label><input type="radio" name="pastScholarship" value="Yes"> Yes</label><label><input type="radio" name="pastScholarship" value="No"> No</label></div>
+      </div>
+      <div class="conditional" id="pastScholarshipFields">
+        <div class="form-group"><label>Name of Scholarship</label><input type="text" id="pastScholName"></div>
+        <div class="form-group"><label>Awarding Body</label><input type="text" id="pastScholBody"></div>
+        <div class="form-row">
+          <div class="form-group"><label>Year Received</label><input type="text" id="pastScholYear"></div>
+          <div class="form-group"><label>Amount</label><input type="text" id="pastScholAmount"></div>
+        </div>
+      </div>
+      <div class="form-group"><label>Are you currently receiving any other financial support for education? *</label>
+        <div class="radio-group"><label><input type="radio" name="otherSupport" value="Yes"> Yes</label><label><input type="radio" name="otherSupport" value="No"> No</label></div>
+        <div class="error" id="errOtherSupport"></div>
+      </div>
+    </div>
+
+    <!-- Section D -->
+    <div class="form-section" id="section3">
+      <h2>Financial Information</h2>
+      <p class="section-desc">Help us understand your financial circumstances.</p>
+      <div class="form-group"><label>Estimated Annual Household Income *</label>
+        <select id="income" required><option value="">Select</option><option>Below ₦200,000</option><option>₦200,000 – ₦500,000</option><option>₦500,000 – ₦1,000,000</option><option>₦1,000,000 – ₦2,500,000</option><option>Above ₦2,500,000</option></select>
+        <div class="error" id="errIncome"></div>
+      </div>
+      <div class="form-group"><label>Parent/Guardian Employment Status *</label>
+        <select id="employment" required><option value="">Select</option><option>Employed (Government)</option><option>Employed (Private)</option><option>Self-Employed</option><option>Unemployed</option><option>Retired</option><option>Deceased</option></select>
+        <div class="error" id="errEmployment"></div>
+      </div>
+      <div class="form-group"><label>Are you a first-generation university student? *</label>
+        <div class="radio-group"><label><input type="radio" name="firstGen" value="Yes"> Yes</label><label><input type="radio" name="firstGen" value="No"> No</label></div>
+        <div class="error" id="errFirstGen"></div>
+      </div>
+      <div class="form-group"><label>Number of siblings currently in secondary or tertiary education *</label><input type="number" id="siblings" min="0" required><div class="error" id="errSiblings"></div></div>
+      <div class="form-group"><label>Do you have any dependents you support financially? *</label>
+        <div class="radio-group"><label><input type="radio" name="dependents" value="Yes"> Yes</label><label><input type="radio" name="dependents" value="No"> No</label></div>
+        <div class="error" id="errDependents"></div>
+      </div>
+    </div>
+
+    <!-- Section E -->
+    <div class="form-section" id="section4">
+      <h2>Personal Statement & Documents</h2>
+      <p class="section-desc">Share your story and upload required documents.</p>
+      <div class="form-group"><label>Why do you deserve this scholarship? (min 50 words) *</label><textarea id="deserve" rows="5" required></textarea><div class="word-counter" id="deserveCounter">Word count: 0 / 50 minimum</div><div class="error" id="errDeserve"></div></div>
+      <div class="form-group"><label>What are your career goals and how will this scholarship help? (min 50 words) *</label><textarea id="careerGoals" rows="4" required></textarea><div class="word-counter" id="careerCounter">Word count: 0 / 50 minimum</div><div class="error" id="errCareer"></div></div>
+      <div class="form-group"><label>Describe one challenge you have overcome that demonstrates your resilience.</label><textarea id="challenge" rows="4"></textarea></div>
+      <h3 style="margin:24px 0 16px;font-size:1.1rem;color:var(--navy);">Document Uploads (PDF max 5MB each)</h3>
+      <div class="upload-item"><label style="min-width:200px;">Academic Transcript *</label><input type="file" accept=".pdf" data-req="true" id="docTranscript"><span class="upload-status" id="statusTranscript">✅</span></div>
+      <div class="upload-item"><label style="min-width:200px;">Admission Letter *</label><input type="file" accept=".pdf" data-req="true" id="docAdmission"><span class="upload-status" id="statusAdmission">✅</span></div>
+      <div class="upload-item"><label style="min-width:200px;">Reference Letter 1 *</label><input type="file" accept=".pdf" data-req="true" id="docRef1"><span class="upload-status" id="statusRef1">✅</span></div>
+      <div class="upload-item"><label style="min-width:200px;">Reference Letter 2 *</label><input type="file" accept=".pdf" data-req="true" id="docRef2"><span class="upload-status" id="statusRef2">✅</span></div>
+      <div class="upload-item"><label style="min-width:200px;">Proof of Financial Need *</label><input type="file" accept=".pdf" data-req="true" id="docFinancial"><span class="upload-status" id="statusFinancial">✅</span></div>
+      <div class="upload-item"><label style="min-width:200px;">Valid Government ID *</label><input type="file" accept=".pdf,.jpg,.png" data-req="true" id="docId"><span class="upload-status" id="statusId">✅</span></div>
+      <div class="upload-item"><label style="min-width:200px;">Passport Photograph *</label><input type="file" accept=".jpg,.png" data-req="true" id="docPhoto"><span class="upload-status" id="statusPhoto">✅</span></div>
+      <div class="error" id="errDocs"></div>
+    </div>
+
+    <!-- Review -->
+    <div class="form-section" id="sectionReview">
+      <h2>Review & Submit</h2>
+      <p class="section-desc">Please review your application before proceeding to the tests.</p>
+      <div id="reviewContent"></div>
+      <div class="checkbox-group">
+        <input type="checkbox" id="confirmCheck">
+        <label for="confirmCheck">I confirm that all information provided is accurate and truthful. I understand that false information will result in immediate disqualification.</label>
+      </div>
+      <div class="error" id="errConfirm"></div>
+    </div>
+
+    <div class="nav-buttons">
+      <button class="btn btn-ghost" id="backBtn" style="visibility:hidden;">Back</button>
+      <button class="btn btn-gold" id="nextBtn">Next</button>
+    </div>
+  </div>
+
+  <script>
+    function requireLogin() {
+      if (!localStorage.getItem('cmf_isLoggedIn')) window.location.href = 'auth.html';
+    }
+    requireLogin();
+
+    const states = ['Abia','Adamawa','Akwa Ibom','Anambra','Bauchi','Bayelsa','Benue','Borno','Cross River','Delta','Ebonyi','Edo','Ekiti','Enugu','FCT','Gombe','Imo','Jigawa','Kaduna','Kano','Katsina','Kebbi','Kogi','Kwara','Lagos','Nasarawa','Niger','Ogun','Ondo','Osun','Oyo','Plateau','Rivers','Sokoto','Taraba','Yobe','Zamfara'];
+    const stateSelect = document.getElementById('state');
+    states.forEach(s => { const o = document.createElement('option'); o.value = s; o.textContent = s; stateSelect.appendChild(o); });
+
+    document.getElementById('userName').textContent = localStorage.getItem('cmf_name') || 'Applicant';
+    document.getElementById('fullName').value = localStorage.getItem('cmf_name') || '';
+    document.getElementById('email').value = localStorage.getItem('cmf_email') || '';
+    document.getElementById('phone').value = localStorage.getItem('cmf_phone') || '';
+
+    document.getElementById('logoutBtn').addEventListener('click', () => {
+      localStorage.removeItem('cmf_isLoggedIn');
+      window.location.href = 'auth.html';
+    });
+
+    let currentStep = 0;
+    const totalSteps = 5;
+    const uploadedDocs = {};
+
+    document.querySelectorAll('input[type=file]').forEach(input => {
+      input.addEventListener('change', () => {
+        if (input.files[0]) {
+          if (input.files[0].size > 5 * 1024 * 1024) { alert('File must be under 5MB.'); input.value = ''; return; }
+          uploadedDocs[input.id] = input.files[0].name;
+          const statusId = 'status' + input.id.replace('doc', '');
+          const status = document.getElementById(statusId);
+          if (status) { status.classList.add('show'); status.textContent = '✅ ' + input.files[0].name; }
+        }
+      });
+    });
+
+    document.querySelectorAll('input[name=pastScholarship]').forEach(r => {
+      r.addEventListener('change', () => {
+        document.getElementById('pastScholarshipFields').classList.toggle('show', r.value === 'Yes' && r.checked);
+      });
+    });
+
+    function toggleOtherCourseField() {
+      const isOther = document.getElementById('course').value === 'Others';
+      document.getElementById('otherCourseFields').classList.toggle('show', isOther);
+      document.getElementById('otherCourse').required = isOther;
+      if (!isOther) {
+        document.getElementById('otherCourse').value = '';
+        setError('errOtherCourse', '');
+      }
+    }
+    document.getElementById('course').addEventListener('change', toggleOtherCourseField);
+
+    function getEffectiveCourse() {
+      const selected = document.getElementById('course').value;
+      if (selected === 'Others') {
+        return document.getElementById('otherCourse').value.trim();
+      }
+      return selected;
+    }
+
+    function countWords(text) { return text.trim().split(/\s+/).filter(w => w).length; }
+    function setupCounter(textareaId, counterId, min) {
+      document.getElementById(textareaId).addEventListener('input', () => {
+        const count = countWords(document.getElementById(textareaId).value);
+        const el = document.getElementById(counterId);
+        el.textContent = `Word count: ${count} / ${min} minimum`;
+        el.classList.toggle('valid', count >= min);
+      });
+    }
+    setupCounter('whyScholarship', 'whyCounter', 50);
+    setupCounter('deserve', 'deserveCounter', 50);
+    setupCounter('careerGoals', 'careerCounter', 50);
+
+    function getRadio(name) { const el = document.querySelector(`input[name="${name}"]:checked`); return el ? el.value : ''; }
+    function setError(id, msg) { const el = document.getElementById(id); if (el) { el.textContent = msg; el.style.display = msg ? 'block' : 'none'; } }
+
+    function validateStep(step) {
+      let valid = true;
+      if (step === 0) {
+        if (!document.getElementById('dob').value) { setError('errDob', 'Date of birth is required.'); valid = false; } else setError('errDob', '');
+        if (!document.getElementById('state').value) { setError('errState', 'State is required.'); valid = false; } else setError('errState', '');
+        if (!document.getElementById('address').value.trim()) { setError('errAddress', 'Address is required.'); valid = false; } else setError('errAddress', '');
+        if (!document.getElementById('nokName').value.trim()) { setError('errNokName', 'Required.'); valid = false; } else setError('errNokName', '');
+        if (!document.getElementById('nokRel').value.trim()) { setError('errNokRel', 'Required.'); valid = false; } else setError('errNokRel', '');
+        if (!document.getElementById('nokPhone').value.trim()) { setError('errNokPhone', 'Required.'); valid = false; } else setError('errNokPhone', '');
+      }
+      if (step === 1) {
+        if (!document.getElementById('university').value.trim()) { setError('errUniversity', 'Required.'); valid = false; } else setError('errUniversity', '');
+        if (!document.getElementById('course').value) { setError('errCourse', 'Required.'); valid = false; } else setError('errCourse', '');
+        if (document.getElementById('course').value === 'Others') {
+          const other = document.getElementById('otherCourse').value.trim();
+          if (!other || other.length < 3) { setError('errOtherCourse', 'Please enter your course name (at least 3 characters).'); valid = false; }
+          else setError('errOtherCourse', '');
+        } else setError('errOtherCourse', '');
+        if (!document.getElementById('level').value) { setError('errLevel', 'Required.'); valid = false; } else setError('errLevel', '');
+        const cgpa = parseFloat(document.getElementById('cgpa').value);
+        if (isNaN(cgpa) || cgpa < 0 || cgpa > 5) { setError('errCgpa', 'Enter valid CGPA (0-5).'); valid = false; } else setError('errCgpa', '');
+        if (!document.getElementById('matric').value.trim()) { setError('errMatric', 'Required.'); valid = false; } else setError('errMatric', '');
+        if (!getRadio('repeated')) { setError('errRepeated', 'Please select an option.'); valid = false; } else setError('errRepeated', '');
+      }
+      if (step === 2) {
+        if (!getRadio('scholarship')) { setError('errScholarship', 'Please select a scholarship.'); valid = false; } else setError('errScholarship', '');
+        if (countWords(document.getElementById('whyScholarship').value) < 50) { setError('errWhy', 'Minimum 50 words required.'); valid = false; } else setError('errWhy', '');
+        if (!getRadio('otherSupport')) { setError('errOtherSupport', 'Please select.'); valid = false; } else setError('errOtherSupport', '');
+      }
+      if (step === 3) {
+        if (!document.getElementById('income').value) { setError('errIncome', 'Required.'); valid = false; } else setError('errIncome', '');
+        if (!document.getElementById('employment').value) { setError('errEmployment', 'Required.'); valid = false; } else setError('errEmployment', '');
+        if (!getRadio('firstGen')) { setError('errFirstGen', 'Please select.'); valid = false; } else setError('errFirstGen', '');
+        if (document.getElementById('siblings').value === '') { setError('errSiblings', 'Required.'); valid = false; } else setError('errSiblings', '');
+        if (!getRadio('dependents')) { setError('errDependents', 'Please select.'); valid = false; } else setError('errDependents', '');
+      }
+      if (step === 4) {
+        if (countWords(document.getElementById('deserve').value) < 50) { setError('errDeserve', 'Minimum 50 words.'); valid = false; } else setError('errDeserve', '');
+        if (countWords(document.getElementById('careerGoals').value) < 50) { setError('errCareer', 'Minimum 50 words.'); valid = false; } else setError('errCareer', '');
+        const requiredDocs = ['docTranscript','docAdmission','docRef1','docRef2','docFinancial','docId','docPhoto'];
+        const missing = requiredDocs.filter(id => !uploadedDocs[id]);
+        if (missing.length) { setError('errDocs', 'Please upload all required documents.'); valid = false; } else setError('errDocs', '');
+      }
+      return valid;
+    }
+
+    function showStep(step) {
+      document.querySelectorAll('.form-section').forEach(s => s.classList.remove('active'));
+      if (step < totalSteps) document.getElementById('section' + step).classList.add('active');
+      else document.getElementById('sectionReview').classList.add('active');
+      document.querySelectorAll('.progress-step').forEach((p, i) => {
+        p.classList.remove('active', 'done');
+        if (i < step) p.classList.add('done');
+        else if (i === step && step < totalSteps) p.classList.add('active');
+        else if (step >= totalSteps) p.classList.add('done');
+      });
+      document.getElementById('backBtn').style.visibility = step > 0 ? 'visible' : 'hidden';
+      document.getElementById('nextBtn').textContent = step >= totalSteps - 1 ? (step === totalSteps ? 'Save & Proceed to Tests' : 'Review Application') : 'Next';
+      if (step === totalSteps) buildReview();
+    }
+
+    function collectData() {
+      const courseSelect = document.getElementById('course').value;
+      const effectiveCourse = getEffectiveCourse();
+      return {
+        name: document.getElementById('fullName').value,
+        email: document.getElementById('email').value,
+        dob: document.getElementById('dob').value,
+        gender: document.getElementById('gender').value,
+        state: document.getElementById('state').value,
+        phone: document.getElementById('phone').value,
+        address: document.getElementById('address').value,
+        nokName: document.getElementById('nokName').value,
+        nokRel: document.getElementById('nokRel').value,
+        nokPhone: document.getElementById('nokPhone').value,
+        university: document.getElementById('university').value,
+        course: effectiveCourse,
+        courseSelection: courseSelect,
+        otherCourse: courseSelect === 'Others' ? effectiveCourse : '',
+        level: document.getElementById('level').value,
+        cgpa: document.getElementById('cgpa').value,
+        matric: document.getElementById('matric').value,
+        supervisor: document.getElementById('supervisor').value,
+        repeated: getRadio('repeated'),
+        scholarship: getRadio('scholarship'),
+        whyScholarship: document.getElementById('whyScholarship').value,
+        pastScholarship: getRadio('pastScholarship'),
+        pastScholName: document.getElementById('pastScholName').value,
+        pastScholBody: document.getElementById('pastScholBody').value,
+        pastScholYear: document.getElementById('pastScholYear').value,
+        pastScholAmount: document.getElementById('pastScholAmount').value,
+        otherSupport: getRadio('otherSupport'),
+        income: document.getElementById('income').value,
+        employment: document.getElementById('employment').value,
+        firstGen: getRadio('firstGen'),
+        siblings: document.getElementById('siblings').value,
+        dependents: getRadio('dependents'),
+        deserve: document.getElementById('deserve').value,
+        careerGoals: document.getElementById('careerGoals').value,
+        challenge: document.getElementById('challenge').value,
+        documents: uploadedDocs,
+        submittedAt: new Date().toISOString()
+      };
+    }
+
+    function buildReview() {
+      const d = collectData();
+      const fields = [['Name',d.name],['Email',d.email],['DOB',d.dob],['State',d.state],['University',d.university],['Course',d.course],['Level',d.level],['CGPA',d.cgpa],['Scholarship',d.scholarship],['Income',d.income],['First Gen',d.firstGen]];
+      document.getElementById('reviewContent').innerHTML = fields.map(([k,v]) => `<div class="review-item"><strong>${k}:</strong> ${v || '—'}</div>`).join('');
+    }
+
+    document.getElementById('nextBtn').addEventListener('click', () => {
+      if (currentStep < totalSteps) {
+        if (!validateStep(currentStep)) return;
+        currentStep++;
+        if (currentStep === totalSteps) showStep(totalSteps);
+        else showStep(currentStep);
+      } else {
+        if (!document.getElementById('confirmCheck').checked) { setError('errConfirm', 'You must confirm before submitting.'); return; }
+        setError('errConfirm', '');
+        const data = collectData();
+        localStorage.setItem('cmf_application', JSON.stringify(data));
+        localStorage.setItem('cmf_course', data.course);
+        localStorage.setItem('cmf_level', data.level);
+        if (data.courseSelection === 'Others') {
+          localStorage.setItem('cmf_course_custom', data.otherCourse);
+        } else {
+          localStorage.removeItem('cmf_course_custom');
+        }
+
+        const applicants = JSON.parse(localStorage.getItem('cmf_applicants') || '[]');
+        const existing = applicants.findIndex(a => a.email === data.email);
+        const applicant = {
+          name: data.name, email: data.email, phone: data.phone,
+          course: data.course, level: data.level, university: data.university,
+          scholarship: data.scholarship, cgpa: data.cgpa,
+          overallStatus: 'incomplete', isFlagged: false,
+          application: data, submittedAt: data.submittedAt
+        };
+        if (existing >= 0) applicants[existing] = { ...applicants[existing], ...applicant };
+        else applicants.push(applicant);
+        localStorage.setItem('cmf_applicants', JSON.stringify(applicants));
+        localStorage.setItem('cmf_applicationStarted', 'true');
+        window.location.href = 'test-instructions.html';
+      }
+    });
+
+    document.getElementById('backBtn').addEventListener('click', () => {
+      if (currentStep > 0) { currentStep--; showStep(currentStep); }
+    });
+  </script>
+</body>
+</html>

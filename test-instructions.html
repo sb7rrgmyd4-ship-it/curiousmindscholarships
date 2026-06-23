@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/png" href="favicon.png">
+  <link rel="apple-touch-icon" href="favicon.png">
+  <title>Test Instructions — The Curious Minds Foundation</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
+  <style>
+    :root{--navy:#0D1F3C;--gold:#C9A84C;--ivory:#F8F6F1;--text-dark:#1A1A2E;--muted:#6B7280;--white:#FFFFFF;--danger:#C0392B;--danger-bg:#FFF5F5;--gold-tint:#FDF6E3;--success:#2D7A4F;}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:'Inter',sans-serif;background:var(--ivory);color:var(--text-dark);line-height:1.6;}
+    h1,h2,h3{font-family:'Playfair Display',serif;color:var(--navy);}
+    .container{max-width:960px;margin:0 auto;padding:40px 24px 60px;}
+    .page-hero{text-align:center;padding:32px 24px 40px;background:var(--navy);color:var(--white);border-radius:16px;margin-bottom:40px;position:relative;overflow:hidden;}
+    .page-hero::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,transparent 60%,rgba(201,168,76,0.08));}
+    .page-hero>*{position:relative;z-index:1;}
+    .page-hero .eyebrow{font-size:0.7rem;font-weight:500;letter-spacing:0.15em;text-transform:uppercase;color:var(--gold);margin-bottom:12px;}
+    .page-hero h1{font-size:clamp(1.5rem,4vw,2.1rem);color:var(--white);margin-bottom:10px;}
+    .page-hero p{color:rgba(255,255,255,0.75);max-width:560px;margin:0 auto;font-size:0.95rem;}
+    .test-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-bottom:40px;}
+    .test-card{background:var(--white);padding:28px 20px;border-radius:12px;box-shadow:0 4px 20px rgba(13,31,60,0.07);border-top:4px solid var(--gold);text-align:center;transition:transform 0.25s;}
+    .test-card:hover{transform:translateY(-4px);}
+    .test-card .num{width:36px;height:36px;background:var(--navy);color:var(--gold);border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;margin:0 auto 14px;font-size:0.9rem;}
+    .test-card h3{font-size:0.95rem;margin-bottom:14px;line-height:1.3;}
+    .test-card .meta{display:flex;flex-direction:column;gap:6px;}
+    .test-card .meta span{font-size:0.8rem;color:var(--muted);}
+    .test-card .meta strong{color:var(--navy);font-size:0.85rem;}
+    .rules-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:32px;}
+    .rules-panel{background:var(--white);border-radius:12px;padding:28px;box-shadow:0 4px 20px rgba(13,31,60,0.06);}
+    .rules-panel h2{font-size:1.15rem;margin-bottom:6px;display:flex;align-items:center;gap:10px;}
+    .rules-panel h2 .icon{width:32px;height:32px;background:var(--gold-tint);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;}
+    .rules-panel .subtitle{color:var(--muted);font-size:0.85rem;margin-bottom:20px;}
+    .step-list{list-style:none;counter-reset:steps;}
+    .step-list li{counter-increment:steps;display:flex;gap:14px;padding:14px 0;border-bottom:1px solid #f0ede6;font-size:0.9rem;}
+    .step-list li:last-child{border-bottom:none;}
+    .step-list li::before{content:counter(steps);flex-shrink:0;width:28px;height:28px;background:var(--gold);color:var(--navy);border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.8rem;}
+    .violation-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+    .violation-item{display:flex;align-items:flex-start;gap:10px;padding:12px;background:var(--danger-bg);border-radius:8px;font-size:0.82rem;border-left:3px solid var(--danger);}
+    .violation-item::before{content:'✕';color:var(--danger);font-weight:700;flex-shrink:0;}
+    .policy-section{background:var(--white);border-radius:12px;overflow:hidden;margin-bottom:32px;box-shadow:0 4px 20px rgba(13,31,60,0.06);border:1px solid rgba(192,57,43,0.2);}
+    .policy-header{background:linear-gradient(135deg,#fdecea,var(--danger-bg));padding:24px 28px;border-bottom:1px solid rgba(192,57,43,0.15);}
+    .policy-header h2{font-size:1.15rem;color:var(--danger);margin-bottom:6px;}
+    .policy-header p{font-size:0.88rem;color:var(--muted);}
+    .policy-body{padding:28px;}
+    .policy-note{background:var(--navy);color:var(--white);padding:20px 24px;border-radius:8px;font-size:0.9rem;line-height:1.7;margin-top:20px;}
+    .policy-note strong{color:var(--gold);}
+    .tech-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+    .tech-item{background:var(--ivory);padding:16px;border-radius:8px;text-align:center;font-size:0.82rem;border:1px solid #e8e6e1;}
+    .tech-item .t-icon{font-size:1.4rem;margin-bottom:8px;}
+    .tech-item strong{display:block;color:var(--navy);margin-bottom:4px;font-size:0.85rem;}
+    .declaration-box{background:var(--white);border:2px solid var(--gold);border-radius:12px;padding:24px;margin-bottom:32px;display:flex;align-items:flex-start;gap:16px;}
+    .declaration-box input{margin-top:4px;min-width:20px;min-height:20px;accent-color:var(--gold);}
+    .declaration-box label{font-size:0.9rem;cursor:pointer;line-height:1.7;}
+    .btn-wrap{text-align:center;}
+    .btn{display:inline-block;padding:16px 48px;background:var(--gold);color:var(--navy);border:none;border-radius:50px;font-weight:600;font-size:1rem;cursor:pointer;transition:all 0.3s;min-height:44px;}
+    .btn:hover:not(:disabled){background:#b8963f;transform:translateY(-2px);}
+    .btn:disabled{opacity:0.45;cursor:not-allowed;}
+    .monitor-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(201,168,76,0.15);color:var(--gold);padding:8px 16px;border-radius:50px;font-size:0.8rem;font-weight:500;margin-top:16px;}
+    @media(max-width:768px){
+      .test-cards,.rules-grid,.tech-grid{grid-template-columns:1fr;}
+      .violation-grid{grid-template-columns:1fr;}
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="page-hero">
+      <p class="eyebrow">Scholarship Assessment Portal</p>
+      <h1>Before You Begin — Read This Carefully</h1>
+      <p>Your tests are timed. Please read the honour code and anti-malpractice policy carefully before you begin.</p>
+      <div class="monitor-badge">📋 Academic integrity policy — please read before starting</div>
+    </div>
+
+    <div class="test-cards">
+      <div class="test-card">
+        <div class="num">1</div>
+        <h3>Discipline-Based Exam</h3>
+        <div class="meta">
+          <span>Course-specific questions</span>
+          <strong>30 Questions · 45 Minutes</strong>
+          <span>Pass mark: <strong style="color:var(--success);">60%</strong></span>
+        </div>
+      </div>
+      <div class="test-card">
+        <div class="num">2</div>
+        <h3>Aptitude & Reasoning Test</h3>
+        <div class="meta">
+          <span>Verbal, numerical & logical</span>
+          <strong>25 Questions · 35 Minutes</strong>
+          <span>Pass mark: <strong style="color:var(--success);">60%</strong></span>
+        </div>
+      </div>
+      <div class="test-card">
+        <div class="num">3</div>
+        <h3>Situational Judgement Test</h3>
+        <div class="meta">
+          <span>Ethics & character scenarios</span>
+          <strong>20 Questions · 30 Minutes</strong>
+          <span>Pass mark: <strong style="color:var(--success);">60%</strong></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="rules-grid">
+      <div class="rules-panel">
+        <h2><span class="icon">📋</span> General Instructions</h2>
+        <p class="subtitle">Follow these steps throughout your assessment session.</p>
+        <ol class="step-list">
+          <li>You will complete three separate timed tests in one session.</li>
+          <li>Tests must be taken in order: Test 1 → Test 2 → Test 3.</li>
+          <li>The timer starts the moment questions appear on screen.</li>
+          <li>You may navigate between questions before submitting each test.</li>
+          <li>Once submitted, you cannot return to a completed test.</li>
+          <li>You must pass all three tests (minimum 60% each) to proceed.</li>
+          <li>Questions are generated specifically for your course and level.</li>
+        </ol>
+      </div>
+      <div class="rules-panel">
+        <h2><span class="icon">💻</span> Technical Requirements</h2>
+        <p class="subtitle">Ensure your setup meets these requirements before starting.</p>
+        <div class="tech-grid" style="grid-template-columns:1fr 1fr;">
+          <div class="tech-item"><div class="t-icon">📱</div><strong>Any Device</strong>Phone, tablet, laptop, or desktop</div>
+          <div class="tech-item"><div class="t-icon">🌐</div><strong>Stable Internet</strong>Before you begin</div>
+          <div class="tech-item"><div class="t-icon">🌍</div><strong>Chrome or Firefox</strong>Recommended browsers</div>
+          <div class="tech-item"><div class="t-icon">🔋</div><strong>Power Connected</strong>Or fully charged</div>
+        </div>
+        <p style="font-size:0.85rem;">Close all other tabs and applications before beginning for the best experience.</p>
+      </div>
+    </div>
+
+    <div class="policy-section">
+      <div class="policy-header">
+        <h2>⚠️ Anti-Malpractice Policy</h2>
+        <p>The following actions during an active test session will result in immediate automatic disqualification.</p>
+      </div>
+      <div class="policy-body">
+        <div class="violation-grid">
+          <div class="violation-item">Switching to another browser tab or window</div>
+          <div class="violation-item">Minimising or leaving the browser</div>
+          <div class="violation-item">Exiting fullscreen mode during the test</div>
+          <div class="violation-item">Right-clicking anywhere on the test page</div>
+          <div class="violation-item">Using blocked shortcuts (Ctrl+C, Ctrl+V, F12, etc.)</div>
+          <div class="violation-item">Using a secondary screen without approval</div>
+          <div class="violation-item">Refreshing or closing the page during the test</div>
+          <div class="violation-item">Attempting to screenshot or print the test</div>
+        </div>
+        <div class="policy-note">
+          <strong>Academic integrity reminder:</strong> The actions listed above violate our honour code and may result in disqualification if reported. By proceeding, you agree to complete all tests honestly and without external assistance. Serious violations <strong>may be reported to your institution</strong> at the Foundation's sole discretion.
+        </div>
+      </div>
+    </div>
+
+    <div class="declaration-box">
+      <input type="checkbox" id="declareCheck">
+      <label for="declareCheck" id="declareLabel">I have read and fully understood all instructions and the anti-malpractice policy above. I agree to complete all three tests honestly and without external assistance.</label>
+    </div>
+
+    <div class="btn-wrap">
+      <button class="btn" id="beginBtn" disabled>Begin Test 1</button>
+    </div>
+  </div>
+
+  <script>
+    function requireLogin() {
+      if (!localStorage.getItem('cmf_isLoggedIn')) window.location.href = 'auth.html';
+    }
+    requireLogin();
+
+    const name = localStorage.getItem('cmf_name') || 'Applicant';
+    document.getElementById('declareLabel').textContent =
+      `I, ${name}, have read and fully understood all instructions and the anti-malpractice policy above. I agree to complete all three tests honestly and without any form of external assistance. I understand that any violation during an active test session will result in permanent disqualification with no right of appeal.`;
+
+    document.getElementById('declareCheck').addEventListener('change', e => {
+      document.getElementById('beginBtn').disabled = !e.target.checked;
+    });
+
+    document.getElementById('beginBtn').addEventListener('click', () => {
+      window.location.href = 'test.html?test=1';
+    });
+  </script>
+</body>
+</html>

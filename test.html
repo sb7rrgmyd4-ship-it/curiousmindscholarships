@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/png" href="favicon.png">
+  <link rel="apple-touch-icon" href="favicon.png">
+  <title>Scholarship Test — The Curious Minds Foundation</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
+  <style>
+    :root{--navy:#0D1F3C;--gold:#C9A84C;--ivory:#F8F6F1;--text-dark:#1A1A2E;--muted:#6B7280;--white:#FFFFFF;--danger:#C0392B;--success:#2D7A4F;}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:'Inter',sans-serif;background:var(--ivory);color:var(--text-dark);}
+    .top-bar{position:sticky;top:0;background:var(--navy);color:var(--white);padding:12px 24px;display:flex;justify-content:space-between;align-items:center;z-index:100;}
+    .top-bar-center{color:var(--gold);font-weight:600;font-size:0.95rem;}
+    .timer{font-size:1.25rem;font-weight:700;font-variant-numeric:tabular-nums;}
+    .timer.warning{color:var(--danger);animation:pulse 1s infinite;}
+    @keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.6;}}
+    .progress-wrap{background:#e0e0e0;height:6px;}
+    .progress-fill{height:100%;background:var(--gold);transition:width 0.3s;}
+    .progress-label{text-align:right;padding:4px 24px;font-size:0.8rem;color:var(--muted);background:var(--white);}
+    .loading-screen,.error-screen,.complete-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:80vh;padding:40px;text-align:center;}
+    .spinner{width:48px;height:48px;border:4px solid #eee;border-top-color:var(--gold);border-radius:50%;animation:spin 1s linear infinite;margin:24px 0;}
+    @keyframes spin{to{transform:rotate(360deg);}}
+    .test-area{max-width:720px;margin:0 auto;padding:32px 24px 80px;}
+    .q-label{font-size:0.8rem;color:var(--gold);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:8px;}
+    .q-text{font-family:'Playfair Display',serif;font-size:clamp(1.1rem,3vw,1.375rem);color:var(--navy);margin-bottom:24px;line-height:1.5;}
+    .option-card{display:flex;align-items:flex-start;gap:14px;padding:16px 20px;background:var(--white);border:2px solid #ddd;border-radius:10px;margin-bottom:12px;cursor:pointer;transition:all 0.2s;}
+    .option-card:hover{border-color:var(--gold);}
+    .option-card.selected{background:var(--gold);border-color:var(--gold);color:var(--navy);}
+    .option-badge{width:32px;height:32px;border-radius:50%;background:var(--navy);color:var(--white);display:flex;align-items:center;justify-content:center;font-weight:600;flex-shrink:0;font-size:0.9rem;}
+    .option-card.selected .option-badge{background:var(--navy);}
+    .nav-btns{display:flex;justify-content:space-between;margin-top:32px;gap:12px;}
+    .btn{padding:12px 28px;border-radius:50px;font-weight:500;cursor:pointer;border:2px solid transparent;min-height:44px;font-size:0.95rem;}
+    .btn-gold{background:var(--gold);color:var(--navy);}
+    .btn-gold:disabled{opacity:0.5;cursor:not-allowed;}
+    .btn-ghost{background:transparent;color:var(--navy);border-color:var(--navy);}
+    .btn-ghost:disabled{opacity:0.4;cursor:not-allowed;}
+    .dot-nav{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:32px;}
+    .dot{width:12px;height:12px;border-radius:50%;border:2px solid #ccc;cursor:pointer;transition:all 0.2s;}
+    .dot.answered{background:var(--gold);border-color:var(--gold);}
+    .dot.current{background:var(--navy);border-color:var(--navy);box-shadow:0 0 0 2px var(--white),0 0 0 4px var(--navy);}
+    .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;z-index:1000;padding:24px;}
+    .modal{background:var(--white);padding:32px;border-radius:12px;max-width:420px;width:100%;text-align:center;position:relative;}
+    .modal h3{font-family:'Playfair Display',serif;margin-bottom:16px;color:var(--navy);}
+    .modal-btns{display:flex;gap:12px;justify-content:center;margin-top:24px;}
+    .flag-modal{background:var(--danger);color:var(--white);padding:40px;border-radius:12px;max-width:500px;text-align:center;}
+    .flag-modal h2{margin-bottom:16px;font-size:1.5rem;}
+    .flag-modal p{margin-bottom:12px;font-size:0.95rem;line-height:1.6;}
+    .complete-screen h2{font-family:'Playfair Display',serif;font-size:1.75rem;color:var(--navy);margin-bottom:16px;}
+    .score-badge{display:inline-block;padding:12px 32px;border-radius:50px;font-size:1.25rem;font-weight:700;margin:20px 0;}
+    .score-badge.pass{background:#e8f5e9;color:var(--success);}
+    .score-badge.fail{background:#fdecea;color:var(--danger);}
+    .score-bar{height:12px;background:#eee;border-radius:6px;max-width:400px;margin:16px auto;overflow:hidden;}
+    .score-bar-fill{height:100%;background:var(--gold);border-radius:6px;}
+    .pass-line{position:relative;}
+    .hidden{display:none!important;}
+  </style>
+</head>
+<body>
+  <div id="loadingScreen" class="loading-screen">
+    <svg width="48" height="48" viewBox="0 0 32 32" fill="none"><path d="M16 2C16 2 10 8 10 16C10 20 12 24 16 26C20 24 22 20 22 16C22 8 16 2 16 2Z" stroke="#C9A84C" stroke-width="2"/></svg>
+    <div class="spinner"></div>
+    <h2 style="font-family:'Playfair Display',serif;color:var(--navy);" id="loadingTitle">Generating your personalised test...</h2>
+    <p id="loadingSub" style="color:var(--muted);margin-top:8px;"></p>
+    <p style="color:var(--muted);font-size:0.85rem;margin-top:16px;">Please do not close or refresh this page.</p>
+  </div>
+
+  <div id="errorScreen" class="error-screen hidden">
+    <h2 style="font-family:'Playfair Display',serif;color:var(--danger);">Unable to Load Test</h2>
+    <p id="errorMsg" style="margin:16px 0;color:var(--muted);"></p>
+    <a href="test-instructions.html" class="btn btn-gold" style="display:inline-block;text-decoration:none;">Return to Instructions</a>
+  </div>
+
+  <div id="testUI" class="hidden">
+    <div class="top-bar">
+      <div class="logo-small">
+        <svg width="24" height="24" viewBox="0 0 32 32" fill="none"><path d="M16 2C16 2 10 8 10 16C10 20 12 24 16 26C20 24 22 20 22 16C22 8 16 2 16 2Z" stroke="#C9A84C" stroke-width="2"/></svg>
+      </div>
+      <div class="top-bar-center" id="testTitle"></div>
+      <div class="timer" id="timer">00:00</div>
+    </div>
+    <div class="progress-wrap"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+    <div class="progress-label" id="progressLabel">0 of 0 answered</div>
+    <div class="test-area">
+      <div class="q-label" id="qLabel"></div>
+      <div class="q-text" id="qText"></div>
+      <div id="options"></div>
+      <div class="nav-btns">
+        <button class="btn btn-ghost" id="prevQ">Previous</button>
+        <button class="btn btn-gold" id="nextQ">Next</button>
+      </div>
+      <div class="dot-nav" id="dotNav"></div>
+    </div>
+  </div>
+
+  <div id="completeScreen" class="complete-screen hidden">
+    <svg width="48" height="48" viewBox="0 0 32 32" fill="none"><path d="M16 2C16 2 10 8 10 16C10 20 12 24 16 26C20 24 22 20 22 16C22 8 16 2 16 2Z" stroke="#C9A84C" stroke-width="2"/></svg>
+    <h2 id="completeTitle"></h2>
+    <p id="completeScore" style="font-size:1.1rem;margin:8px 0;"></p>
+    <p id="completePct" style="font-size:1.5rem;font-weight:700;color:var(--navy);"></p>
+    <div class="score-badge" id="passBadge"></div>
+    <div class="score-bar"><div class="score-bar-fill" id="scoreBarFill"></div></div>
+    <button class="btn btn-gold" id="proceedBtn" style="margin-top:24px;"></button>
+  </div>
+
+  <div id="submitModal" class="modal-overlay hidden">
+    <div class="modal">
+      <h3>Submit Test?</h3>
+      <p>Are you sure you want to submit? You cannot return to this test.</p>
+      <div class="modal-btns">
+        <button class="btn btn-ghost" id="cancelSubmit">Cancel</button>
+        <button class="btn btn-gold" id="confirmSubmit">Submit Test</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function requireLogin() {
+      if (!localStorage.getItem('cmf_isLoggedIn')) window.location.href = 'auth.html';
+    }
+    requireLogin();
+    localStorage.removeItem('cmf_isFlagged');
+    localStorage.removeItem('cmf_flagReason');
+    localStorage.removeItem('cmf_flagTime');
+
+    const params = new URLSearchParams(location.search);
+    const testNum = parseInt(params.get('test')) || 1;
+    const testConfig = {
+      1: { name: 'Discipline-Based Exam', total: 30, time: 2700 },
+      2: { name: 'Aptitude & Reasoning Test', total: 25, time: 2100 },
+      3: { name: 'Situational Judgement Test', total: 20, time: 1800 }
+    };
+    const config = testConfig[testNum];
+    if (!config) { location.href = 'test-instructions.html'; }
+
+    let questions = [], answers = {}, currentQ = 0, timeLeft = config.time, timerInterval, testEnded = false;
+
+    const course = localStorage.getItem('cmf_course') || localStorage.getItem('cmf_course_custom') || 'General Studies';
+    const level = localStorage.getItem('cmf_level') || '200L';
+
+    document.getElementById('loadingTitle').textContent = `⚙️ Generating your personalised ${config.name}...`;
+    document.getElementById('loadingSub').textContent = `Preparing ${config.total} questions for ${course} — ${level}`;
+
+    function updateApplicant(updates) {
+      const email = localStorage.getItem('cmf_email');
+      const applicants = JSON.parse(localStorage.getItem('cmf_applicants') || '[]');
+      const idx = applicants.findIndex(a => a.email === email);
+      if (idx >= 0) applicants[idx] = { ...applicants[idx], ...updates };
+      localStorage.setItem('cmf_applicants', JSON.stringify(applicants));
+    }
+
+    async function generateQuestions(testNumber) {
+      const apiKey = localStorage.getItem('cmf_api_key');
+
+      let prompt = '';
+      if (testNumber === 1) {
+        prompt = `You are a senior academic exam setter for a top Nigerian university scholarship board.
+Generate exactly ${config.total} multiple choice questions for a ${level} ${course} student in Nigeria.
+
+The student's programme is "${course}". Base the questions STRICTLY on core subjects and topics taught at ${level} in accredited Nigerian universities for ${course}.
+
+If "${course}" is a specialised or less common programme, infer the standard Nigerian university curriculum for that field at ${level} and set questions accordingly.
+
+Difficulty: undergraduate level — test genuine understanding with theory, application, and numerical problems where appropriate.
+All 4 options must be plausible. No trick questions.
+
+Return ONLY a valid raw JSON array. No markdown. No explanation. No code fences.
+Format: [{"question":"...","options":["A. ...","B. ...","C. ...","D. ..."],"answer":"A"},...]
+Generate exactly ${config.total} questions.`;
+      } else if (testNumber === 2) {
+        prompt = `Generate exactly ${config.total} aptitude and reasoning multiple choice questions for a Nigerian university scholarship board.
+Mix verbal, numerical, logical and critical thinking questions evenly.
+Return ONLY a valid raw JSON array. No markdown. No code fences.
+Format: [{"question":"...","options":["A. ...","B. ...","C. ...","D. ..."],"answer":"B"},...]
+Generate exactly ${config.total} questions.`;
+      } else {
+        prompt = `Generate exactly ${config.total} Situational Judgement Test questions for a Nigerian university scholarship.
+Each scenario tests academic integrity, ethics, and maturity.
+Return ONLY a valid raw JSON array. No markdown. No code fences.
+Format: [{"question":"...","options":["A. ...","B. ...","C. ...","D. ..."],"answer":"C"},...]
+Generate exactly ${config.total} questions.`;
+      }
+
+      let res;
+      const payload = { prompt, model: 'claude-3-5-sonnet-20241022', max_tokens: 8000 };
+      if (apiKey) payload.apiKey = apiKey;
+
+      try {
+        res = await fetch('/api/anthropic', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+      } catch (err) {
+        const reason = err?.message || String(err);
+        const protocolHint = location.protocol === 'file:' ? ' The page is running from file://, which prevents browser requests to the question generation API. Run node server.js and open http://localhost:8000/test.html, or deploy the site to Vercel.' : '';
+        throw new Error(`Unable to reach the question generation API.${protocolHint} (${reason})`);
+      }
+      if (!res.ok) {
+        const errorText = await res.text().catch(() => '');
+        let errorMessage = errorText;
+        try {
+          errorMessage = JSON.parse(errorText).error?.message || errorText;
+        } catch (err) {}
+        if (res.status === 401) {
+          throw new Error('Anthropic rejected the API key. Please re-enter the key in the admin settings and make sure it is active and valid.');
+        }
+        throw new Error(`Anthropic API request failed (${res.status} ${res.statusText})${errorMessage ? ': ' + errorMessage : ''}`);
+      }
+      let data;
+      try {
+        data = await res.json();
+      } catch (err) {
+        throw new Error('Anthropic API returned invalid JSON. This may be caused by a network/CORS error or an unsupported endpoint.');
+      }
+      if (data.error) throw new Error(data.error.message || 'API request failed');
+      let raw;
+      if (data.content?.[0]?.text) raw = data.content[0].text.trim();
+      else if (data.completion?.[0]?.data?.[0]?.text) raw = data.completion[0].data[0].text.trim();
+      else if (data.completion?.text) raw = data.completion.text.trim();
+      else if (data.response?.output?.[0]?.content?.[0]?.text) raw = data.response.output[0].content[0].text.trim();
+      else if (data.output?.[0]?.content?.[0]?.text) raw = data.output[0].content[0].text.trim();
+      else throw new Error('Unexpected Anthropic response format — check your API version and request body.');
+      raw = raw.replace(/```json\n?/g, '').replace(/```\n?/g, '');
+      try {
+        return JSON.parse(raw);
+      } catch (err) {
+        throw new Error('Unable to parse Anthropic response as JSON. Response was: ' + raw.slice(0, 300));
+      }
+    }
+
+    function showError(msg) {
+      document.getElementById('loadingScreen').classList.add('hidden');
+      document.getElementById('errorScreen').classList.remove('hidden');
+      document.getElementById('errorMsg').textContent = msg;
+    }
+
+    function startTest() {
+      document.getElementById('loadingScreen').classList.add('hidden');
+      document.getElementById('testUI').classList.remove('hidden');
+      document.getElementById('testTitle').textContent = `Test ${testNum} of 3 — ${config.name}`;
+      answers = {};
+      for (let i = 0; i < questions.length; i++) answers[i] = null;
+      buildDotNav();
+      renderQuestion();
+      startTimer();
+    }
+
+    function startTimer() {
+      updateTimerDisplay();
+      timerInterval = setInterval(() => {
+        timeLeft--;
+        updateTimerDisplay();
+        if (timeLeft <= 0) { clearInterval(timerInterval); autoSubmit(); }
+      }, 1000);
+    }
+
+    function updateTimerDisplay() {
+      const m = Math.floor(timeLeft / 60), s = timeLeft % 60;
+      const el = document.getElementById('timer');
+      el.textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+      el.classList.toggle('warning', timeLeft <= 300);
+    }
+
+    function buildDotNav() {
+      const nav = document.getElementById('dotNav');
+      nav.innerHTML = questions.map((_, i) =>
+        `<div class="dot ${answers[i] ? 'answered' : ''} ${i === currentQ ? 'current' : ''}" data-i="${i}"></div>`
+      ).join('');
+      nav.querySelectorAll('.dot').forEach(d => d.addEventListener('click', () => { currentQ = +d.dataset.i; renderQuestion(); }));
+    }
+
+    function renderQuestion() {
+      const q = questions[currentQ];
+      document.getElementById('qLabel').textContent = `Question ${currentQ + 1} of ${questions.length}`;
+      document.getElementById('qText').textContent = q.question;
+      const opts = document.getElementById('options');
+      opts.innerHTML = q.options.map((opt, i) => {
+        const letter = opt.charAt(0);
+        const text = opt.substring(3);
+        const sel = answers[currentQ] === letter ? 'selected' : '';
+        return `<div class="option-card ${sel}" data-letter="${letter}"><div class="option-badge">${letter}</div><div>${text || opt}</div></div>`;
+      }).join('');
+      opts.querySelectorAll('.option-card').forEach(card => {
+        card.addEventListener('click', () => {
+          answers[currentQ] = card.dataset.letter;
+          renderQuestion();
+          updateProgress();
+        });
+      });
+      document.getElementById('prevQ').disabled = currentQ === 0;
+      const isLast = currentQ === questions.length - 1;
+      const nextBtn = document.getElementById('nextQ');
+      nextBtn.textContent = isLast ? 'Submit Test' : 'Next';
+      nextBtn.disabled = !answers[currentQ];
+      buildDotNav();
+      updateProgress();
+    }
+
+    function updateProgress() {
+      const answered = Object.values(answers).filter(a => a !== null).length;
+      const pct = (answered / questions.length) * 100;
+      document.getElementById('progressFill').style.width = pct + '%';
+      document.getElementById('progressLabel').textContent = `${answered} of ${questions.length} answered`;
+    }
+
+    document.getElementById('prevQ').addEventListener('click', () => {
+      if (currentQ > 0) { currentQ--; renderQuestion(); }
+    });
+
+    document.getElementById('nextQ').addEventListener('click', () => {
+      if (!answers[currentQ]) return;
+      if (currentQ < questions.length - 1) { currentQ++; renderQuestion(); }
+      else document.getElementById('submitModal').classList.remove('hidden');
+    });
+
+    document.getElementById('cancelSubmit').addEventListener('click', () => {
+      document.getElementById('submitModal').classList.add('hidden');
+    });
+    document.getElementById('confirmSubmit').addEventListener('click', () => {
+      document.getElementById('submitModal').classList.add('hidden');
+      submitTest();
+    });
+
+    function autoSubmit() {
+      const overlay = document.createElement('div');
+      overlay.className = 'modal-overlay';
+      overlay.innerHTML = '<div class="modal"><h3>Time\'s up!</h3><p>Your test is being submitted automatically.</p></div>';
+      document.body.appendChild(overlay);
+      setTimeout(() => { overlay.remove(); submitTest(); }, 2000);
+    }
+
+    function submitTest() {
+      if (testEnded) return;
+      testEnded = true;
+      clearInterval(timerInterval);
+      let score = 0;
+      questions.forEach((q, i) => { if (answers[i] === q.answer) score++; });
+      const pct = Math.round((score / questions.length) * 100);
+      const passed = pct >= 60;
+
+      localStorage.setItem(`cmf_test${testNum}Score`, score);
+      localStorage.setItem(`cmf_test${testNum}Total`, questions.length);
+      localStorage.setItem(`cmf_test${testNum}Pass`, passed);
+
+      const updates = {};
+      updates[`test${testNum}Score`] = score;
+      updates[`test${testNum}Pass`] = passed;
+      if (testNum === 3) {
+        const t1 = localStorage.getItem('cmf_test1Pass') === 'true';
+        const t2 = localStorage.getItem('cmf_test2Pass') === 'true';
+        updates.overallStatus = (t1 && t2 && passed) ? 'awaiting_review' : 'failed';
+        updates.testsCompletedAt = new Date().toISOString();
+        if (t1 && t2 && passed) localStorage.setItem('cmf_showThankYou', 'true');
+      }
+      updateApplicant(updates);
+
+      document.getElementById('testUI').classList.add('hidden');
+      document.getElementById('completeScreen').classList.remove('hidden');
+      document.getElementById('completeTitle').textContent = `Test ${testNum} Complete`;
+      document.getElementById('completeScore').textContent = `You scored ${score} out of ${questions.length}`;
+      document.getElementById('completePct').textContent = `${pct}%`;
+      const badge = document.getElementById('passBadge');
+      badge.textContent = passed ? 'PASS' : 'FAIL';
+      badge.className = 'score-badge ' + (passed ? 'pass' : 'fail');
+      document.getElementById('scoreBarFill').style.width = pct + '%';
+
+      const proceed = document.getElementById('proceedBtn');
+      if (testNum < 3) {
+        proceed.textContent = `Proceed to Test ${testNum + 1}`;
+        proceed.onclick = () => location.href = `test.html?test=${testNum + 1}`;
+      } else {
+        proceed.textContent = 'View Application Status';
+        proceed.onclick = () => location.href = 'results.html';
+      }
+    }
+
+    (async () => {
+      try {
+        questions = await generateQuestions(testNum);
+        if (!questions || questions.length === 0) throw new Error('No questions generated');
+        if (questions.length > config.total) questions = questions.slice(0, config.total);
+        startTest();
+      } catch (e) {
+        showError(e.message || 'Failed to load test questions. Please try again.');
+      }
+    })();
+  </script>
+</body>
+</html>
