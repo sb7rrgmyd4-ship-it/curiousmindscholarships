@@ -5,7 +5,7 @@ const path = require('path');
 
 const PORT = process.env.PORT || 8000;
 const PUBLIC_DIR = path.resolve(__dirname);
-const DEFAULT_MODEL = 'claude-3-5-sonnet-20241022';
+const DEFAULT_MODEL = 'claude-sonnet-4-6';
 
 const mimeTypes = {
   '.html': 'text/html',
@@ -62,7 +62,7 @@ function proxyAnthropic(req, res) {
     }
 
     const anthropicBody = JSON.stringify({
-      model: model || DEFAULT_MODEL,
+      model: process.env.ANTHROPIC_MODEL || model || DEFAULT_MODEL,
       max_tokens: max_tokens || 8000,
       messages: [{ role: 'user', content: prompt }]
     });

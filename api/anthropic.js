@@ -1,5 +1,5 @@
 const ANTHROPIC_URL = 'https://api.anthropic.com/v1/messages';
-const DEFAULT_MODEL = 'claude-3-5-sonnet-20241022';
+const DEFAULT_MODEL = 'claude-sonnet-4-6';
 
 function sendJson(res, statusCode, payload) {
   res.statusCode = statusCode;
@@ -71,7 +71,7 @@ module.exports = async function handler(req, res) {
   }
 
   const anthropicBody = {
-    model: payload.model || DEFAULT_MODEL,
+    model: process.env.ANTHROPIC_MODEL || payload.model || DEFAULT_MODEL,
     max_tokens: Number(payload.max_tokens) || 8000,
     messages: [{ role: 'user', content: prompt }]
   };

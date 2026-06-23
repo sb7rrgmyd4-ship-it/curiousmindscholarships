@@ -32,8 +32,9 @@
     .form-group input[readonly]{background:#f0f0f0;color:var(--muted);}
     .form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
     .error{color:var(--danger);font-size:0.8rem;margin-top:4px;}
-    .radio-group{display:flex;gap:20px;flex-wrap:wrap;}
-    .radio-group label{display:flex;align-items:center;gap:6px;font-weight:400;cursor:pointer;}
+    .radio-group{display:flex;gap:12px;flex-wrap:wrap;}
+    .radio-group label{display:flex;align-items:center;gap:8px;font-weight:400;cursor:pointer;padding:10px 14px;border:1px solid #e5e2db;border-radius:8px;background:var(--white);min-height:44px;}
+    .radio-group input,.scholarship-radio input{accent-color:var(--gold);flex-shrink:0;}
     .scholarship-cards{display:grid;gap:12px;}
     .scholarship-radio{display:flex;align-items:flex-start;gap:12px;padding:16px;border:2px solid #eee;border-radius:8px;cursor:pointer;transition:all 0.3s;}
     .scholarship-radio:has(input:checked){border-color:var(--gold);background:var(--ivory);}
@@ -58,7 +59,32 @@
     .review-item strong{color:var(--navy);display:inline-block;min-width:180px;}
     .checkbox-group{display:flex;align-items:flex-start;gap:10px;margin:20px 0;}
     .checkbox-group input{margin-top:4px;}
-    @media(max-width:768px){.form-row{grid-template-columns:1fr;}.progress-step{min-width:80px;font-size:0.65rem;}}
+    @media(max-width:768px){
+      .header{align-items:flex-start;}
+      .header-right{width:100%;justify-content:space-between;font-size:0.82rem;}
+      .container{padding:20px 14px;}
+      .progress{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-bottom:20px;}
+      .progress-step{min-width:0;border-radius:8px;padding:9px 8px;font-size:0.72rem;line-height:1.25;}
+      .form-section{padding:22px 16px;border-radius:10px;}
+      .form-section h2{font-size:1.3rem;}
+      .section-desc{margin-bottom:18px;}
+      .form-row{grid-template-columns:1fr;gap:0;}
+      .radio-group{display:grid;grid-template-columns:1fr 1fr;gap:10px;width:100%;}
+      .radio-group label{justify-content:center;width:100%;padding:12px 10px;text-align:center;}
+      .scholarship-radio{padding:14px;gap:10px;}
+      .scholarship-radio strong{font-size:0.95rem;line-height:1.3;}
+      .upload-item{align-items:flex-start;flex-direction:column;gap:8px;}
+      .upload-item label{min-width:0!important;}
+      .upload-item input[type=file]{width:100%;}
+      .review-item strong{display:block;min-width:0;margin-bottom:2px;}
+      .nav-buttons{position:sticky;bottom:0;background:var(--ivory);padding:12px 0 4px;margin-top:24px;}
+      .btn{flex:1;padding:12px 18px;}
+    }
+    @media(max-width:420px){
+      .progress{grid-template-columns:1fr;}
+      .radio-group{grid-template-columns:1fr;}
+      .header-right{flex-direction:column;align-items:flex-start;gap:8px;}
+    }
   </style>
 </head>
 <body>

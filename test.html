@@ -183,7 +183,7 @@ Generate exactly ${config.total} questions.`;
       }
 
       let res;
-      const payload = { prompt, model: 'claude-3-5-sonnet-20241022', max_tokens: 8000 };
+      const payload = { prompt, model: 'claude-sonnet-4-6', max_tokens: 8000 };
       if (apiKey) payload.apiKey = apiKey;
 
       try {
