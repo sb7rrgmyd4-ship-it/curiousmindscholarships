@@ -169,15 +169,31 @@
     requireLogin();
 
     const name = localStorage.getItem('cmf_name') || 'Applicant';
+    function getNextPendingTest() {
+      for (let i = 1; i <= 3; i++) {
+        if (localStorage.getItem(`cmf_test${i}Score`) === null) return i;
+      }
+      return null;
+    }
+
+    const nextPendingTest = getNextPendingTest();
+    const beginBtn = document.getElementById('beginBtn');
+
     document.getElementById('declareLabel').textContent =
       `I, ${name}, have read and fully understood all instructions and the anti-malpractice policy above. I agree to complete all three tests honestly and without any form of external assistance. I understand that any violation during an active test session will result in permanent disqualification with no right of appeal.`;
 
+    beginBtn.textContent = nextPendingTest
+      ? (nextPendingTest === 1 ? 'Begin Test 1' : `Continue Test ${nextPendingTest}`)
+      : 'View Application Status';
+    beginBtn.disabled = !!nextPendingTest;
+    if (!nextPendingTest) document.getElementById('declareCheck').disabled = true;
+
     document.getElementById('declareCheck').addEventListener('change', e => {
-      document.getElementById('beginBtn').disabled = !e.target.checked;
+      beginBtn.disabled = nextPendingTest ? !e.target.checked : false;
     });
 
-    document.getElementById('beginBtn').addEventListener('click', () => {
-      window.location.href = 'test.html?test=1';
+    beginBtn.addEventListener('click', () => {
+      window.location.href = nextPendingTest ? `test.html?test=${nextPendingTest}` : 'results.html';
     });
   </script>
 </body>

@@ -81,7 +81,7 @@
 
     <div class="results-card" id="resultsCard">
       <table class="results-table">
-        <thead><tr><th>Test</th><th>Score</th><th>Percentage</th><th>Status</th></tr></thead>
+        <thead><tr><th>Assessment</th><th>Submission Status</th></tr></thead>
         <tbody id="resultsBody"></tbody>
       </table>
     </div>
@@ -137,12 +137,14 @@
     }
 
     function resetTests() {
-      ['cmf_test1Score','cmf_test2Score','cmf_test3Score','cmf_test1Total','cmf_test2Total','cmf_test3Total','cmf_test1Pass','cmf_test2Pass','cmf_test3Pass'].forEach(k => localStorage.removeItem(k));
-      const email = localStorage.getItem('cmf_email');
-      updateApplicant(email, { test1Score:null, test2Score:null, test3Score:null, test1Pass:null, test2Pass:null, test3Pass:null, overallStatus:'incomplete', adminApproved:false, acceptanceFeePaid:false });
-      localStorage.removeItem('cmf_adminApproved');
-      localStorage.removeItem('cmf_acceptanceFeePaid');
-      window.location.href = 'test-instructions.html';
+      alert('Retakes are not permitted. Please contact the Foundation administrator if you need assistance.');
+    }
+
+    function getNextPendingTest() {
+      for (let i = 1; i <= 3; i++) {
+        if (localStorage.getItem(`cmf_test${i}Score`) === null) return i;
+      }
+      return null;
     }
 
     function payAcceptanceFee() {
@@ -201,29 +203,23 @@
     });
 
     const tests = [
-      { name: 'Test 1: Discipline Exam', total: 30, scoreKey: 'cmf_test1Score' },
-      { name: 'Test 2: Aptitude & Reasoning', total: 25, scoreKey: 'cmf_test2Score' },
-      { name: 'Test 3: Situational Judgement', total: 20, scoreKey: 'cmf_test3Score' }
+      { name: 'Test 1: Discipline Exam', scoreKey: 'cmf_test1Score' },
+      { name: 'Test 2: Aptitude & Reasoning', scoreKey: 'cmf_test2Score' },
+      { name: 'Test 3: Situational Judgement', scoreKey: 'cmf_test3Score' }
     ];
 
-    let allPassed = true, anyFailed = false, hasTest3 = !!localStorage.getItem('cmf_test3Score');
+    const nextPendingTest = getNextPendingTest();
+    const allTestsSubmitted = !nextPendingTest;
     const tbody = document.getElementById('resultsBody');
 
     tests.forEach(t => {
       const scoreRaw = localStorage.getItem(t.scoreKey);
-      const score = scoreRaw !== null ? parseInt(scoreRaw) : null;
-      const hasScore = score !== null && !isNaN(score);
-      const pct = hasScore && t.total ? Math.round((score / t.total) * 100) : 0;
-      const passed = hasScore && pct >= 60;
-      if (hasScore && !passed) { allPassed = false; anyFailed = true; }
-      if (!hasScore) allPassed = false;
+      const hasSubmission = scoreRaw !== null;
       const row = document.createElement('tr');
-      row.innerHTML = hasScore ? `
+      row.innerHTML = hasSubmission ? `
         <td>${t.name}</td>
-        <td>${score} / ${t.total}</td>
-        <td>${pct}%<div class="score-bar"><div class="score-bar-fill" style="width:${pct}%"></div></div></td>
-        <td><span class="badge ${passed ? 'badge-pass' : 'badge-fail'}">${passed ? '✅ PASS' : '❌ FAIL'}</span></td>
-      ` : `<td>${t.name}</td><td colspan="3" style="color:var(--muted);">Not yet taken</td>`;
+        <td><span class="badge badge-pass">Submitted</span></td>
+      ` : `<td>${t.name}</td><td style="color:var(--muted);">Not yet submitted</td>`;
       tbody.appendChild(row);
     });
 
@@ -258,33 +254,22 @@
         <a href="index.html" class="btn btn-outline" style="margin-top:16px;">Return to Home</a>
       `;
       document.getElementById('payBtn').addEventListener('click', payAcceptanceFee);
-    } else if (allPassed && hasTest3) {
+    } else if (allTestsSubmitted) {
       topBanner.innerHTML = `<div class="status-banner awaiting"><span class="icon">⏳</span><div><h2>Awaiting Final Decision</h2><p>Your tests are complete. Our panel is reviewing your application.</p></div></div>`;
       header.className = 'overall-header awaiting';
       header.textContent = 'Application Under Review';
       body.innerHTML = `
-        <p>Thank you for completing all three scholarship tests. You have successfully met the minimum requirements at the test stage.</p>
-        <p>Your application is now under review by our admissions panel. Your final decision will be sent to <strong>${email}</strong> within <strong>6–8 weeks</strong> of the application deadline.</p>
+        <p>Thank you for completing all three scholarship tests. Your scores are private and available only to the admissions panel.</p>
+        <p>Your application is now under review. Your final decision will be sent to <strong>${email}</strong> within <strong>6–8 weeks</strong> of the application deadline.</p>
         <p style="font-size:0.85rem;">Please ensure all supporting documents have been uploaded. You will be notified here when a decision is made.</p>
-        <button class="btn btn-outline" onclick="resetTests()">Retake Tests</button>
         <a href="index.html" class="btn">Return to Home</a>
-      `;
-    } else if (anyFailed && hasTest3) {
-      header.className = 'overall-header fail';
-      header.textContent = 'Tests Not Passed';
-      body.innerHTML = `
-        <p>You did not meet the minimum pass mark of 60% in one or more required tests. Your application cannot proceed to the review stage in this cycle.</p>
-        <p>You may <strong>retake all three tests</strong> to improve your scores. We encourage you to prepare thoroughly before attempting again.</p>
-        <button class="btn" onclick="resetTests()">Retake All Tests</button>
-        <a href="index.html" class="btn btn-outline">Return to Home</a>
       `;
     } else {
       header.className = 'overall-header awaiting';
       header.textContent = 'Tests Incomplete';
       body.innerHTML = `
         <p>You have not yet completed all three required tests. Continue your application to proceed.</p>
-        <a href="test-instructions.html" class="btn">Continue Tests</a>
-        <button class="btn btn-outline" onclick="resetTests()">Start Fresh</button>
+        <a href="test.html?test=${nextPendingTest}" class="btn">Continue Test ${nextPendingTest}</a>
       `;
     }
   </script>
